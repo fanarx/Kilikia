@@ -1,0 +1,23 @@
+# type Note @model @auth(rules: [{ allow: owner }]) {
+#   id: ID!
+#   note: String!
+# }
+
+enum VoteEnum {
+  YES
+  MAYBE
+  NO
+}
+
+type User @model {
+  id: ID!
+  username: String!
+  registered: Boolean
+  vote: Vote @connection(name: "UserVote")
+}
+
+type Vote @model {
+  id: ID!
+  isComing: VoteEnum
+  user: User @connection(name: "UserVote")
+}

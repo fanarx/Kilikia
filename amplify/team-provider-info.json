@@ -1,0 +1,19 @@
+{
+    "kilenv": {
+        "awscloudformation": {
+            "AuthRoleName": "kilikia-kilenv-20190808134154-authRole",
+            "UnauthRoleArn": "arn:aws:iam::828063991677:role/kilikia-kilenv-20190808134154-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::828063991677:role/kilikia-kilenv-20190808134154-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "kilikia-kilenv-20190808134154-deployment",
+            "UnauthRoleName": "kilikia-kilenv-20190808134154-unauthRole",
+            "StackName": "kilikia-kilenv-20190808134154",
+            "StackId": "arn:aws:cloudformation:us-east-1:828063991677:stack/kilikia-kilenv-20190808134154/b45353d0-b9c0-11e9-9350-12b31d3117be"
+        },
+        "categories": {
+            "auth": {
+                "kilikiaaa4d6d03": {}
+            }
+        }
+    }
+}

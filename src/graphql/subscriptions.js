@@ -5,14 +5,14 @@ export const onCreateUser = `subscription OnCreateUser {
   onCreateUser {
     id
     username
-    registered
+    confirmed
     vote {
       id
       isComing
       user {
         id
         username
-        registered
+        confirmed
       }
     }
   }
@@ -22,14 +22,14 @@ export const onUpdateUser = `subscription OnUpdateUser {
   onUpdateUser {
     id
     username
-    registered
+    confirmed
     vote {
       id
       isComing
       user {
         id
         username
-        registered
+        confirmed
       }
     }
   }
@@ -39,14 +39,14 @@ export const onDeleteUser = `subscription OnDeleteUser {
   onDeleteUser {
     id
     username
-    registered
+    confirmed
     vote {
       id
       isComing
       user {
         id
         username
-        registered
+        confirmed
       }
     }
   }
@@ -59,7 +59,7 @@ export const onCreateVote = `subscription OnCreateVote {
     user {
       id
       username
-      registered
+      confirmed
       vote {
         id
         isComing
@@ -75,7 +75,7 @@ export const onUpdateVote = `subscription OnUpdateVote {
     user {
       id
       username
-      registered
+      confirmed
       vote {
         id
         isComing
@@ -91,7 +91,7 @@ export const onDeleteVote = `subscription OnDeleteVote {
     user {
       id
       username
-      registered
+      confirmed
       vote {
         id
         isComing

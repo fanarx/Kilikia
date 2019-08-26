@@ -7,6 +7,7 @@
   function signout(e) {
       dispatch('signout', e)
   }
+  console.log('user from Navbar', user);
 </script>
 
 <div class="flex nav-container">

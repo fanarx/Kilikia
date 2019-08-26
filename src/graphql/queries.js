@@ -5,14 +5,14 @@ export const getUser = `query GetUser($id: ID!) {
   getUser(id: $id) {
     id
     username
-    registered
+    confirmed
     vote {
       id
       isComing
       user {
         id
         username
-        registered
+        confirmed
       }
     }
   }
@@ -27,7 +27,7 @@ export const listUsers = `query ListUsers(
     items {
       id
       username
-      registered
+      confirmed
       vote {
         id
         isComing
@@ -44,7 +44,7 @@ export const getVote = `query GetVote($id: ID!) {
     user {
       id
       username
-      registered
+      confirmed
       vote {
         id
         isComing
@@ -65,7 +65,7 @@ export const listVotes = `query ListVotes(
       user {
         id
         username
-        registered
+        confirmed
       }
     }
     nextToken

@@ -5,14 +5,14 @@ export const createUser = `mutation CreateUser($input: CreateUserInput!) {
   createUser(input: $input) {
     id
     username
-    registered
+    confirmed
     vote {
       id
       isComing
       user {
         id
         username
-        registered
+        confirmed
       }
     }
   }
@@ -22,14 +22,14 @@ export const updateUser = `mutation UpdateUser($input: UpdateUserInput!) {
   updateUser(input: $input) {
     id
     username
-    registered
+    confirmed
     vote {
       id
       isComing
       user {
         id
         username
-        registered
+        confirmed
       }
     }
   }
@@ -39,14 +39,14 @@ export const deleteUser = `mutation DeleteUser($input: DeleteUserInput!) {
   deleteUser(input: $input) {
     id
     username
-    registered
+    confirmed
     vote {
       id
       isComing
       user {
         id
         username
-        registered
+        confirmed
       }
     }
   }
@@ -59,7 +59,7 @@ export const createVote = `mutation CreateVote($input: CreateVoteInput!) {
     user {
       id
       username
-      registered
+      confirmed
       vote {
         id
         isComing
@@ -75,7 +75,7 @@ export const updateVote = `mutation UpdateVote($input: UpdateVoteInput!) {
     user {
       id
       username
-      registered
+      confirmed
       vote {
         id
         isComing
@@ -91,7 +91,7 @@ export const deleteVote = `mutation DeleteVote($input: DeleteVoteInput!) {
     user {
       id
       username
-      registered
+      confirmed
       vote {
         id
         isComing

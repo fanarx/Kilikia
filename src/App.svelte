@@ -4,8 +4,12 @@
   import { createUser } from "./graphql/mutations";
   import { onMount } from "svelte";
   import Navbar from "./components/Navbar";
+  import PlayerLogin from "./components/PlayerLogin";
 
   let user = null;
+
+  const username = "kilikia1";
+  const password = "kilikia";
 
   onMount(async () => {
     getUserData();
@@ -15,12 +19,12 @@
   function handleAuth(authData) {
     switch (authData.payload.event) {
       case "signIn":
-        console.log("signed in");
+        console.log("signed in CASE");
         getUserData();
         registerNewUser(authData.payload.data);
         break;
       case "signUp":
-        console.log("signed up");
+        console.log("signed up", authData);
         break;
       case "signOut":
         console.log("signed out");
@@ -34,22 +38,37 @@
   async function getUserData() {
     try {
       const userData = await Auth.currentAuthenticatedUser();
-      console.log("userData", userData);
+      console.log("currentCredentials: ", userData);
+      //console.log("Auth.currentCredentials() ", Auth.currentCredentials());
       if (userData) {
         user = userData;
       }
     } catch (err) {
-      console.log("err", err);
+      console.log("err currentAuthenticatedUser: ", err);
     }
   }
 
   async function login() {
     try {
+      console.log("trying login");
       const signedUser = await Auth.signIn({
         username: "suren",
-        password: "asdfasdf"
+        password: "fanarx808990"
       });
       console.log("signedUser", signedUser);
+      if (signedUser.challengeName === "NEW_PASSWORD_REQUIRED") {
+        //const { requiredAttributes } = user.challengeParam; // the array of required attributes, e.g ['email', 'phone_number']
+        // You need to get the new password and required attributes from the UI inputs
+        // and then trigger the following function with a button click
+        // For example, the email and phone_number are required attributes
+        //const { username, email, phone_number } = getInfoFromUserInput();
+        const loggedUser = await Auth.completeNewPassword(
+          signedUser, // the Cognito User Object
+          "aharon1990"
+        );
+
+        console.log("logged User::: ", loggedUser);
+      }
     } catch (err) {
       console.log("auth err: ", err);
     }
@@ -64,6 +83,7 @@
   }
 
   async function registerNewUser(signInData) {
+    console.log("signInData in registerNewUser", signInData);
     const getUserInput = {
       id: signInData.signInUserSession.idToken.payload.sub
     };
@@ -76,7 +96,7 @@
           ...getUserInput,
           username: signInData.username,
           //email: signInData.signInUserSession.idToken.payload.email,
-          registered: true
+          confirmed: true
         };
         const newUser = await API.graphql(
           graphqlOperation(createUser, { input: registerUserInput })
@@ -112,10 +132,7 @@
 </div>
 {#if !user}
   <button class="ml-2 btn btn-blue" on:click={login}>Login</button>
-
-  <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-  Button w
-</button>
+  <PlayerLogin />
 {:else}
   <Navbar on:signout={handleSignout} {user} />
   <div>App</div>

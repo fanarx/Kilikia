@@ -14,6 +14,7 @@ export const onCreateUser = `subscription OnCreateUser {
         username
         confirmed
       }
+      createdAt
     }
   }
 }
@@ -31,6 +32,7 @@ export const onUpdateUser = `subscription OnUpdateUser {
         username
         confirmed
       }
+      createdAt
     }
   }
 }
@@ -48,6 +50,7 @@ export const onDeleteUser = `subscription OnDeleteUser {
         username
         confirmed
       }
+      createdAt
     }
   }
 }
@@ -63,8 +66,10 @@ export const onCreateVote = `subscription OnCreateVote {
       vote {
         id
         isComing
+        createdAt
       }
     }
+    createdAt
   }
 }
 `;
@@ -79,8 +84,10 @@ export const onUpdateVote = `subscription OnUpdateVote {
       vote {
         id
         isComing
+        createdAt
       }
     }
+    createdAt
   }
 }
 `;
@@ -95,8 +102,10 @@ export const onDeleteVote = `subscription OnDeleteVote {
       vote {
         id
         isComing
+        createdAt
       }
     }
+    createdAt
   }
 }
 `;

@@ -14,6 +14,7 @@ export const createUser = `mutation CreateUser($input: CreateUserInput!) {
         username
         confirmed
       }
+      createdAt
     }
   }
 }
@@ -31,6 +32,7 @@ export const updateUser = `mutation UpdateUser($input: UpdateUserInput!) {
         username
         confirmed
       }
+      createdAt
     }
   }
 }
@@ -48,6 +50,7 @@ export const deleteUser = `mutation DeleteUser($input: DeleteUserInput!) {
         username
         confirmed
       }
+      createdAt
     }
   }
 }
@@ -63,8 +66,10 @@ export const createVote = `mutation CreateVote($input: CreateVoteInput!) {
       vote {
         id
         isComing
+        createdAt
       }
     }
+    createdAt
   }
 }
 `;
@@ -79,8 +84,10 @@ export const updateVote = `mutation UpdateVote($input: UpdateVoteInput!) {
       vote {
         id
         isComing
+        createdAt
       }
     }
+    createdAt
   }
 }
 `;
@@ -95,8 +102,10 @@ export const deleteVote = `mutation DeleteVote($input: DeleteVoteInput!) {
       vote {
         id
         isComing
+        createdAt
       }
     }
+    createdAt
   }
 }
 `;

@@ -1,11 +1,24 @@
 <script>
   import { API, graphqlOperation } from "aws-amplify";
-  import { createEventDispatcher, onMount } from "svelte";
+  import { createEventDispatcher, onMount, tick } from "svelte";
   import { listUsers } from "../graphql/queries";
   import confirmed from "../images/confirmed.svg";
-  let players = [];
 
   const dispatch = createEventDispatcher();
+
+  export let errorMessage;
+  let players = [];
+  let confirmPassword = null;
+  let password = "";
+  let isLogging = false;
+
+  let selectedPlayer = null;
+  let isDropdownOpen = false;
+
+  $: passwordLengthError = isLogging && password.trim().length === 0;
+
+  $: passwordMatchError =
+    isLogging && confirmPassword !== null && password !== confirmPassword;
 
   onMount(async () => {
     try {
@@ -18,36 +31,124 @@
     }
   });
 
-  let selectedPlayer = null;
+  function toggleDropdown() {
+    isDropdownOpen = !isDropdownOpen;
+  }
+
+  function isPasswordMatch() {
+    return false;
+  }
+
+  function isFormValid() {
+    console.log("passwordLengthError", passwordLengthError);
+    console.log("passwordMatchError", passwordMatchError);
+    return !passwordLengthError && !passwordMatchError;
+  }
+
+  function loginPlayer() {
+    isLogging = true;
+    if (!isFormValid()) {
+      return;
+    }
+    dispatch("login", {
+      username: selectedPlayer.username,
+      password,
+      isConfirmed: selectedPlayer.confirmed
+    });
+  }
 </script>
 
 <style>
-  /* .svg-block {
-    width: 45px;
-    height: 45px;
+  .arrow-up {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+
+    border-bottom: 5px solid black;
   }
-  i {
-    background: red url(../images/checkmark.png) no-repeat 0 0;
+
+  .arrow-down {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+
+    border-top: 5px solid black;
   }
-  .bg {
-    background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgNjQgNjQiIGhlaWdodD0iNjRweCIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgNjQgNjQiIHdpZHRoPSI2NHB4IiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48ZyBpZD0iTGF5ZXJfMSI+PGc+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgZmlsbD0iIzc2QzJBRiIgcj0iMzIiLz48L2c+PGcgb3BhY2l0eT0iMC4yIj48Zz48cGF0aCBkPSJNMjcuNSwzNGMwLDIuNDg1LDIuMDE1LDQuNSw0LjUsNC41czQuNS0yLjAxNSw0LjUtNC41cy0yLjAxNS00LjUtNC41LTQuNVMyNy41LDMxLjUxNSwyNy41LDM0eiIgZmlsbD0iIzIzMUYyMCIvPjwvZz48L2c+PGcgb3BhY2l0eT0iMC4yIj48cGF0aCBkPSJNNTMuOTQ3LDMyLjU3M2MtMC4wNDgtMC41NDgtMC41MTEtMS4xNDctMS4wMjktMS4zMzFsLTQuMTI3LTEuNDY5Yy0wLjUxOC0wLjE4NC0xLjA5LTAuNzYtMS4yNy0xLjI4ICAgIGwtMC42NTMtMS41OGMtMC4yMzgtMC40OTYtMC4yNC0xLjMwOC0wLjAwNC0xLjgwNWwxLjg3NS0zLjk0NGMwLjIzNi0wLjQ5NywwLjEyOS0xLjIzOC0wLjIzOC0xLjY0OGwtMi4wMTctMi4wMTcgICAgYy0wLjQxLTAuMzY3LTEuMTUxLTAuNDc0LTEuNjQ4LTAuMjM4bC0zLjk0NCwxLjg3NWMtMC40OTcsMC4yMzYtMS4zMDksMC4yMzQtMS44MDUtMC4wMDRsLTEuNTgxLTAuNjUyICAgIGMtMC41MTktMC4xODEtMS4wOTUtMC43NTMtMS4yOC0xLjI3MWwtMS40NjktNC4xMjdjLTAuMTg0LTAuNTE4LTAuNzg0LTAuOTgxLTEuMzMxLTEuMDI5YzAsMC0wLjYwNy0wLjA1My0xLjQyNy0wLjA1MyAgICBzLTEuNDI3LDAuMDUzLTEuNDI3LDAuMDUzYy0wLjU0OCwwLjA0OC0xLjE0NywwLjUxMS0xLjMzMSwxLjAyOWwtMS40NjksNC4xMjdjLTAuMTg0LDAuNTE4LTAuNzYsMS4wOS0xLjI4LDEuMjcxbC0xLjU3OCwwLjY1MiAgICBjLTAuNDk2LDAuMjM4LTEuMzA4LDAuMjQtMS44MDUsMC4wMDRsLTMuOTQ3LTEuODc1Yy0wLjQ5Ny0wLjIzNi0xLjIzOC0wLjEyOS0xLjY0OCwwLjIzOGwtMi4wMTcsMi4wMTcgICAgYy0wLjM2NywwLjQxLTAuNDc0LDEuMTUxLTAuMjM4LDEuNjQ4bDEuODc1LDMuOTQ0YzAuMjM2LDAuNDk3LDAuMjM1LDEuMzA5LTAuMDA0LDEuODA1bC0wLjY1MiwxLjU4MSAgICBjLTAuMTgxLDAuNTE5LTAuNzUzLDEuMDk1LTEuMjcxLDEuMjhsLTQuMTI3LDEuNDY5Yy0wLjUxOCwwLjE4NC0wLjk4MSwwLjc4NC0xLjAyOSwxLjMzMWMwLDAtMC4wNTMsMC42MDctMC4wNTMsMS40MjcgICAgYzAsMC44MTksMC4wNTMsMS40MjcsMC4wNTMsMS40MjdjMC4wNDgsMC41NDgsMC41MTEsMS4xNDcsMS4wMjksMS4zMzFsNC4xMywxLjQ2OWMwLjUxOCwwLjE4NCwxLjA5LDAuNzYsMS4yNywxLjI4bDAuNjUzLDEuNTggICAgYzAuMjM4LDAuNDk2LDAuMjQsMS4zMDgsMC4wMDQsMS44MDVsLTEuODc1LDMuOTQ0Yy0wLjIzNiwwLjQ5Ny0wLjEyOSwxLjIzOCwwLjIzOCwxLjY0OGwyLjAxOCwyLjAxNyAgICBjMC40MSwwLjM2NywxLjE1MSwwLjQ3NCwxLjY0OCwwLjIzOGwzLjk0NC0xLjg3NWMwLjQ5Ny0wLjIzNiwxLjMwOS0wLjIzNSwxLjgwNSwwLjAwNGwxLjU4MSwwLjY1MiAgICBjMC41MTksMC4xODEsMS4wOTUsMC43NTMsMS4yOCwxLjI3MWwxLjQ2OSw0LjEzYzAuMTg0LDAuNTE4LDAuNzg0LDAuOTgxLDEuMzMyLDEuMDI4YzAsMCwwLjYwNCwwLjA1MiwxLjQyNCwwLjA1MiAgICBzMS40MjctMC4wNTMsMS40MjctMC4wNTNjMC41NDgtMC4wNDgsMS4xNDctMC41MTEsMS4zMzEtMS4wMjlsMS40NjktNC4xM2MwLjE4NC0wLjUxOCwwLjc2LTEuMDksMS4yOC0xLjI3bDEuNTgtMC42NTIgICAgYzAuNDk2LTAuMjM4LDEuMzA4LTAuMjQsMS44MDUtMC4wMDRsMy45NDQsMS44NzVjMC40OTcsMC4yMzYsMS4yMzgsMC4xMjksMS42NDgtMC4yMzhsMi4wMTctMi4wMTggICAgYzAuMzY3LTAuNDEsMC40NzQtMS4xNTEsMC4yMzgtMS42NDhsLTEuODc1LTMuOTQ0Yy0wLjIzNi0wLjQ5Ny0wLjIzNS0xLjMwOSwwLjAwNC0xLjgwNWwwLjY1Mi0xLjU4MSAgICBjMC4xODEtMC41MTksMC43NTMtMS4wOTUsMS4yNzEtMS4yOGw0LjEzLTEuNDY5YzAuNTE4LTAuMTg0LDAuOTgxLTAuNzg0LDEuMDI4LTEuMzMxYzAsMCwwLjA1Mi0wLjYwNCwwLjA1Mi0xLjQyNCAgICBDNTQsMzMuMTgsNTMuOTQ3LDMyLjU3Myw1My45NDcsMzIuNTczeiBNMzIsNDRjLTUuNTIzLDAtMTAtNC40NzgtMTAtMTBjMC01LjUyMyw0LjQ3Ny0xMCwxMC0xMHMxMCw0LjQ3NywxMCwxMCAgICBDNDIsMzkuNTIyLDM3LjUyMyw0NCwzMiw0NHoiIGZpbGw9IiMyMzFGMjAiLz48L2c+PGc+PGc+PHBhdGggZD0iTTI3LjUsMzJjMCwyLjQ4NSwyLjAxNSw0LjUsNC41LDQuNXM0LjUtMi4wMTUsNC41LTQuNXMtMi4wMTUtNC41LTQuNS00LjVTMjcuNSwyOS41MTUsMjcuNSwzMnoiIGZpbGw9IiM0RjVENzMiLz48L2c+PC9nPjxnPjxwYXRoIGQ9Ik01My45NDcsMzAuNTczYy0wLjA0OC0wLjU0OC0wLjUxMS0xLjE0Ny0xLjAyOS0xLjMzMWwtNC4xMjctMS40NjljLTAuNTE4LTAuMTg0LTEuMDktMC43Ni0xLjI3LTEuMjggICAgbC0wLjY1My0xLjU4Yy0wLjIzOC0wLjQ5Ni0wLjI0LTEuMzA4LTAuMDA0LTEuODA1bDEuODc1LTMuOTQ0YzAuMjM2LTAuNDk3LDAuMTI5LTEuMjM4LTAuMjM4LTEuNjQ4bC0yLjAxNy0yLjAxNyAgICBjLTAuNDEtMC4zNjctMS4xNTEtMC40NzQtMS42NDgtMC4yMzhsLTMuOTQ0LDEuODc1Yy0wLjQ5NywwLjIzNi0xLjMwOSwwLjIzNC0xLjgwNS0wLjAwNGwtMS41ODEtMC42NTIgICAgYy0wLjUxOS0wLjE4MS0xLjA5NS0wLjc1My0xLjI4LTEuMjcxbC0xLjQ2OS00LjEyN2MtMC4xODQtMC41MTgtMC43ODQtMC45ODEtMS4zMzEtMS4wMjljMCwwLTAuNjA3LTAuMDUzLTEuNDI3LTAuMDUzICAgIHMtMS40MjcsMC4wNTMtMS40MjcsMC4wNTNjLTAuNTQ4LDAuMDQ4LTEuMTQ3LDAuNTExLTEuMzMxLDEuMDI5bC0xLjQ2OSw0LjEyN2MtMC4xODQsMC41MTgtMC43NiwxLjA5LTEuMjgsMS4yNzFsLTEuNTc4LDAuNjUyICAgIGMtMC40OTYsMC4yMzgtMS4zMDgsMC4yNC0xLjgwNSwwLjAwNGwtMy45NDctMS44NzVjLTAuNDk3LTAuMjM2LTEuMjM4LTAuMTI5LTEuNjQ4LDAuMjM4bC0yLjAxNywyLjAxNyAgICBjLTAuMzY3LDAuNDEtMC40NzQsMS4xNTEtMC4yMzgsMS42NDhsMS44NzUsMy45NDRjMC4yMzYsMC40OTcsMC4yMzUsMS4zMDktMC4wMDQsMS44MDVsLTAuNjUyLDEuNTgxICAgIGMtMC4xODEsMC41MTktMC43NTMsMS4wOTUtMS4yNzEsMS4yOGwtNC4xMjcsMS40NjljLTAuNTE4LDAuMTg0LTAuOTgxLDAuNzg0LTEuMDI5LDEuMzMxYzAsMC0wLjA1MywwLjYwNy0wLjA1MywxLjQyNyAgICBjMCwwLjgxOSwwLjA1MywxLjQyNywwLjA1MywxLjQyN2MwLjA0OCwwLjU0OCwwLjUxMSwxLjE0NywxLjAyOSwxLjMzMWw0LjEzLDEuNDY5YzAuNTE4LDAuMTg0LDEuMDksMC43NiwxLjI3LDEuMjhsMC42NTMsMS41OCAgICBjMC4yMzgsMC40OTYsMC4yNCwxLjMwOCwwLjAwNCwxLjgwNWwtMS44NzUsMy45NDRjLTAuMjM2LDAuNDk3LTAuMTI5LDEuMjM4LDAuMjM4LDEuNjQ4bDIuMDE4LDIuMDE3ICAgIGMwLjQxLDAuMzY3LDEuMTUxLDAuNDc0LDEuNjQ4LDAuMjM4bDMuOTQ0LTEuODc1YzAuNDk3LTAuMjM2LDEuMzA5LTAuMjM1LDEuODA1LDAuMDA0bDEuNTgxLDAuNjUyICAgIGMwLjUxOSwwLjE4MSwxLjA5NSwwLjc1MywxLjI4LDEuMjcxbDEuNDY5LDQuMTNjMC4xODQsMC41MTgsMC43ODQsMC45ODEsMS4zMzIsMS4wMjhjMCwwLDAuNjA0LDAuMDUyLDEuNDI0LDAuMDUyICAgIHMxLjQyNy0wLjA1MywxLjQyNy0wLjA1M2MwLjU0OC0wLjA0OCwxLjE0Ny0wLjUxMSwxLjMzMS0xLjAyOWwxLjQ2OS00LjEzYzAuMTg0LTAuNTE4LDAuNzYtMS4wOSwxLjI4LTEuMjdsMS41OC0wLjY1MiAgICBjMC40OTYtMC4yMzgsMS4zMDgtMC4yNCwxLjgwNS0wLjAwNGwzLjk0NCwxLjg3NWMwLjQ5NywwLjIzNiwxLjIzOCwwLjEyOSwxLjY0OC0wLjIzOGwyLjAxNy0yLjAxOCAgICBjMC4zNjctMC40MSwwLjQ3NC0xLjE1MSwwLjIzOC0xLjY0OGwtMS44NzUtMy45NDRjLTAuMjM2LTAuNDk3LTAuMjM1LTEuMzA5LDAuMDA0LTEuODA1bDAuNjUyLTEuNTgxICAgIGMwLjE4MS0wLjUxOSwwLjc1My0xLjA5NSwxLjI3MS0xLjI4bDQuMTMtMS40NjljMC41MTgtMC4xODQsMC45ODEtMC43ODQsMS4wMjgtMS4zMzFjMCwwLDAuMDUyLTAuNjA0LDAuMDUyLTEuNDI0ICAgIEM1NCwzMS4xOCw1My45NDcsMzAuNTczLDUzLjk0NywzMC41NzN6IE0zMiw0MmMtNS41MjMsMC0xMC00LjQ3OC0xMC0xMGMwLTUuNTIzLDQuNDc3LTEwLDEwLTEwczEwLDQuNDc3LDEwLDEwICAgIEM0MiwzNy41MjIsMzcuNTIzLDQyLDMyLDQyeiIgZmlsbD0iI0ZGRkZGRiIvPjwvZz48L2c+PGcgaWQ9IkxheWVyXzIiLz48L3N2Zz4=)
-      no-repeat;
-  } */
 </style>
 
-<div class="max-w-sm mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
-  <ul class="flex flex-col items-center">
-    {#each players as player}
-      <li class="flex w-full px-6 py-4 h-12 cursor-pointer hover:bg-teal-600">
+<div
+  class="flex flex-col max-w-sm mx-auto bg-white shadow-lg rounded-lg
+  overflow-hidden">
+  <div on:click={toggleDropdown} class="flex h-10 items-center">
+    <span
+      class={`w-4/5 text-center cursor-pointer ${!selectedPlayer && 'text-gray-700'}`}>
+      {selectedPlayer ? selectedPlayer.username : '-- Select a player --'}
+    </span>
+    <span
+      class={`${isDropdownOpen ? 'arrow-up' : 'arrow-down'} text-gray-700`} />
+  </div>
+  {#if isDropdownOpen}
+    <ul
+      class="flex flex-col items-center absolute mt-10 bg-white border
+      border-gray-400">
+      {#each players as player}
+        <li
+          on:click={() => {
+            password = '';
+            confirmPassword = null;
+            isLogging = false;
+            errorMessage = '';
+            selectedPlayer = player;
+            toggleDropdown();
+          }}
+          class="flex w-full px-6 py-4 h-12 cursor-pointer hover:bg-teal-600">
 
-        <span class="w-2/5 inline-block">
-          {#if player.confirmed}
-            {@html confirmed}
-          {:else}&nbsp;{/if}
-        </span>
+          <span class="w-2/5 inline-block">
+            {#if player.confirmed}
+              {@html confirmed}
+            {:else}&nbsp;{/if}
+          </span>
 
-        <span class="w-3/5">{player.username}</span>
-      </li>
-    {/each}
-  </ul>
+          <span class="w-3/5">{player.username}</span>
+        </li>
+      {/each}
+    </ul>
+  {:else if !isDropdownOpen && selectedPlayer && selectedPlayer.username}
+    {#if selectedPlayer.confirmed}
+      <input
+        class="border py-2 px-3 text-grey-darkest"
+        type="password"
+        bind:value={password}
+        placeholder="Password" />
+    {:else}
+      <input
+        class="border py-2 px-3 text-grey-darkest mb-3"
+        type="password"
+        bind:value={password}
+        placeholder="Password" />
+      <input
+        class="border py-2 px-3 text-grey-darkest"
+        type="password"
+        bind:value={confirmPassword}
+        placeholder="Confirm Password" />
+    {/if}
+    {#if passwordLengthError}
+      <p class="text-red-500">Password is empty</p>
+    {/if}
+    {#if passwordMatchError}
+      <p class="text-red-500">Passwords do not match</p>
+    {/if}
+    {#if errorMessage}
+      <p class="text-red-500">{errorMessage}</p>
+    {/if}
+    <button
+      class="block bg-teal-500 hover:bg-teal-700 text-white uppercase py-2 px-8
+      m-3 mx-auto rounded"
+      type="submit"
+      on:click={loginPlayer}>
+      {selectedPlayer.confirmed ? 'Login' : 'Sign up'}
+    </button>
+  {/if}
 </div>

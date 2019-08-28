@@ -15,4 +15,5 @@ type Vote @model {
   id: ID!
   isComing: VoteEnum
   user: User @connection(name: "UserVote")
+  createdAt: String
 }

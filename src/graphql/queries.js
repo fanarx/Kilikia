@@ -14,6 +14,7 @@ export const getUser = `query GetUser($id: ID!) {
         username
         confirmed
       }
+      createdAt
     }
   }
 }
@@ -31,6 +32,7 @@ export const listUsers = `query ListUsers(
       vote {
         id
         isComing
+        createdAt
       }
     }
     nextToken
@@ -48,8 +50,10 @@ export const getVote = `query GetVote($id: ID!) {
       vote {
         id
         isComing
+        createdAt
       }
     }
+    createdAt
   }
 }
 `;
@@ -67,6 +71,7 @@ export const listVotes = `query ListVotes(
         username
         confirmed
       }
+      createdAt
     }
     nextToken
   }

@@ -156,18 +156,14 @@
       console.log({ updatedUser });
     }
   }
+
+  function handleVote(vote) {
+    console.log("handling vote", vote);
+  }
 </script>
 
 <style>
-  .btn {
-    @apply font-bold py-2 px-4 rounded;
-  }
-  .btn-blue {
-    @apply bg-blue-500 text-white;
-  }
-  .btn-blue:hover {
-    @apply bg-blue-700;
-  }
+
 </style>
 
 <div class="flex justify-between bg-indigo-900 h-10 items-center px-8">
@@ -180,10 +176,12 @@
 <ul class="flex flex-col mx-auto w-2/3 mt-8">
   {#each votes as vote}
     <li
-      class="flex w-full h-12 cursor-pointer hover:bg-teal-600 border-b
+      class="flex w-full h-12 cursor-pointer hover:bg-indigo-200 border-b
       border-grey-light">
-      <span class="w-2/5">{vote.user.username}</span>
-      <span class="w-3/5"><PlayerVote vote={vote.isComing} /></span>
+      <span class="w-2/5 flex items-center">{vote.user.username}</span>
+      <span class="w-3/5">
+        <PlayerVote on:vote={handleVote} vote={vote.isComing} />
+      </span>
     </li>
   {/each}
   <!-- <div>
@@ -191,10 +189,12 @@
   </div> -->
   {#if user && !votedUsers.includes(user.username)}
     <li
-      class="flex w-full h-12 cursor-pointer hover:bg-teal-600 border-b
+      class="flex w-full h-12 cursor-pointer hover:bg-indigo-200 border-b
       border-grey-light">
-      <span class="w-2/5">{user.username}</span>
-      <span class="w-3/5">Options ...</span>
+      <span class="w-2/5 flex items-center">{user.username}</span>
+      <span class="w-3/5">
+        <PlayerVote on:vote={handleVote} />
+      </span>
     </li>
   {/if}
 </ul>

@@ -11,30 +11,26 @@
 
   //const dispatch = createEventDispatcher();
 
-  function generateVoteIcons(vote) {
-    let content = ['<div class="flex w-full">'];
-
-    const yesIcon = vote == "YES" ? sign_yes_active : sign_yes_passive;
-    content.push(yesIcon);
-
-    const noIcon = vote == "NO" ? sign_no_active : sign_no_passive;
-    content.push(noIcon);
-
-    const maybeIcon = vote == "MAYBE" ? sign_maybe_active : sign_maybe_passive;
-    content.push(maybeIcon);
-
-    content.push("</div>");
-    console.log("content", content);
-    return content.join("");
+  function handleClick(vote) {
+    console.log("vote", vote);
   }
 </script>
 
 <style>
-  svg {
-    background-size: 30px 30px;
-  }
+
 </style>
 
-<div class="flex">
-  {@html generateVoteIcons(vote)}
+<div class="flex w-full items-center h-12">
+  <img
+    class="w-8 h-8"
+    src={vote === 'YES' ? sign_yes_active : sign_yes_passive}
+    alt={'YES'} />
+  <img
+    class="w-8 h-8"
+    src={vote === 'NO' ? sign_no_active : sign_no_passive}
+    alt={'NO'} />
+  <img
+    class="w-8 h-8"
+    src={vote === 'MAYBE' ? sign_maybe_active : sign_maybe_passive}
+    alt={'MAYBE'} />
 </div>

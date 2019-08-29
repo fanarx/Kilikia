@@ -2,7 +2,7 @@
   import { API, graphqlOperation } from "aws-amplify";
   import { createEventDispatcher, onMount, tick } from "svelte";
   import { listUsers } from "../graphql/queries";
-  import confirmed from "../images/confirmed.svg";
+  import sign_confirmed from "../images/sign_confirmed.svg";
 
   const dispatch = createEventDispatcher();
 
@@ -92,7 +92,7 @@
   {#if isDropdownOpen}
     <ul
       class="flex flex-col items-center absolute mt-10 bg-white border
-      border-gray-400">
+      border-gray-400 left-0 right-0 w-1/2 mx-auto border-t-0">
       {#each players as player}
         <li
           on:click={() => {
@@ -107,7 +107,7 @@
 
           <span class="w-2/5 inline-block">
             {#if player.confirmed}
-              {@html confirmed}
+              <img class="w-6 h-6" src={sign_confirmed} alt="confirmed" />
             {:else}&nbsp;{/if}
           </span>
 

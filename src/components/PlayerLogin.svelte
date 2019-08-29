@@ -1,5 +1,5 @@
 <script>
-  import { API, graphqlOperation } from "aws-amplify";
+  import API, { graphqlOperation } from "@aws-amplify/api";
   import { createEventDispatcher, onMount, tick } from "svelte";
   import { listUsers } from "../graphql/queries";
   import sign_confirmed from "../images/sign_confirmed.svg";

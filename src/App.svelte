@@ -1,5 +1,8 @@
 <script>
-  import { API, graphqlOperation, Auth, Hub } from "aws-amplify";
+  import API, { graphqlOperation } from "@aws-amplify/api";
+  import Auth from "@aws-amplify/auth";
+  import { Hub } from "@aws-amplify/core";
+
   import { getUser, listVotes } from "./graphql/queries";
   import { createUser, updateUser } from "./graphql/mutations";
   import { onMount } from "svelte";

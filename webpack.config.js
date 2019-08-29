@@ -3,6 +3,7 @@ const path = require('path');
 const autoPreprocess = require('svelte-preprocess');
 const mode = process.env.NODE_ENV || 'development';
 const prod = mode === 'production';
+//const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 // purgecss({
 //   content: ["./**/*.svelte", "./**/*.html"],
@@ -104,6 +105,7 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: '[name].css'
     })
+    // new BundleAnalyzerPlugin()
   ],
   devtool: prod ? false : 'source-map'
 };

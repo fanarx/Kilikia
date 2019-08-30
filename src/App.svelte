@@ -4,8 +4,9 @@
   import { Hub } from "@aws-amplify/core";
 
   import { getUser, listVotes } from "./graphql/queries";
-  import { createUser, updateUser } from "./graphql/mutations";
-  import { onMount } from "svelte";
+  import { createUser, updateUser, updateVote } from "./graphql/mutations";
+  import { onUpdateVote } from "./graphql/subscriptions";
+  import { onMount, onDestroy } from "svelte";
   import Navbar from "./components/Navbar";
   import PlayerLogin from "./components/PlayerLogin";
   import PlayerVote from "./components/PlayerVote";
@@ -17,6 +18,8 @@
   let errorMessage;
   let votes = [];
 
+  let updateVoteSub;
+
   $: votedUsers = votes.map(vote => vote.user.username);
 
   onMount(async () => {
@@ -26,11 +29,29 @@
     try {
       const { data } = await API.graphql(graphqlOperation(listVotes));
 
-      console.log("data", data);
+      console.log("listVotes data", data);
       votes = data.listVotes.items;
+      updateVoteSub = API.graphql(graphqlOperation(onUpdateVote)).subscribe({
+        next: ({ value }) => {
+          const updatedVote = value.data.onUpdateVote;
+          const index = votes.findIndex(vote => vote.id === updatedVote.id);
+
+          const updatedVotes = [
+            ...votes.slice(0, index),
+            updatedVote,
+            ...votes.slice(index + 1)
+          ];
+
+          votes = updatedVotes;
+        }
+      });
     } catch (err) {
-      console.error("Error SELECT new user", err);
+      console.error("Error onMount", err);
     }
+  });
+
+  onDestroy(() => {
+    updateVoteSub.unsubscribe();
   });
 
   function handleAuth(authData) {
@@ -57,7 +78,6 @@
     try {
       const userData = await Auth.currentAuthenticatedUser();
       console.log("currentAuthenticatedUser: ", userData);
-      //console.log("Auth.currentCredentials() ", Auth.currentCredentials());
       if (userData) {
         user = userData;
       }
@@ -87,32 +107,6 @@
     } catch (err) {
       console.log("auth err: ", err);
       errorMessage = err.message;
-    }
-  }
-
-  async function login() {
-    try {
-      console.log("trying login");
-      const signedUser = await Auth.signIn({
-        username: "suren",
-        password: "fanarx808990"
-      });
-      console.log("signedUser", signedUser);
-      if (signedUser.challengeName === "NEW_PASSWORD_REQUIRED") {
-        //const { requiredAttributes } = user.challengeParam; // the array of required attributes, e.g ['email', 'phone_number']
-        // You need to get the new password and required attributes from the UI inputs
-        // and then trigger the following function with a button click
-        // For example, the email and phone_number are required attributes
-        //const { username, email, phone_number } = getInfoFromUserInput();
-        const loggedUser = await Auth.completeNewPassword(
-          signedUser, // the Cognito User Object
-          "aharon1990"
-        );
-
-        console.log("logged User::: ", loggedUser);
-      }
-    } catch (err) {
-      console.log("auth err: ", err);
     }
   }
 
@@ -160,8 +154,20 @@
     }
   }
 
-  function handleVote(vote) {
-    console.log("handling vote", vote);
+  async function handleVoteUpdate(vote, { detail }) {
+    if (!user) return;
+    if (user.attributes.sub !== vote.user.id) return;
+
+    const updateVoteInput = {
+      id: vote.id,
+      isComing: detail
+    };
+    
+    await API.graphql(graphqlOperation(updateVote, { input: updateVoteInput }));
+  }
+
+  function handleVoteCreate() {
+    console.log("handleVoteCreate");
   }
 </script>
 
@@ -183,7 +189,9 @@
       border-grey-light">
       <span class="w-2/5 flex items-center">{vote.user.username}</span>
       <span class="w-3/5">
-        <PlayerVote on:vote={handleVote} vote={vote.isComing} />
+        <PlayerVote
+          on:vote={details => handleVoteUpdate(vote, details)}
+          vote={vote.isComing} />
       </span>
     </li>
   {/each}
@@ -196,7 +204,7 @@
       border-grey-light">
       <span class="w-2/5 flex items-center">{user.username}</span>
       <span class="w-3/5">
-        <PlayerVote on:vote={handleVote} />
+        <PlayerVote on:vote={handleVoteCreate} />
       </span>
     </li>
   {/if}

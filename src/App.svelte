@@ -4,8 +4,13 @@
   import { Hub } from "@aws-amplify/core";
 
   import { getUser, listVotes } from "./graphql/queries";
-  import { createUser, updateUser, updateVote } from "./graphql/mutations";
-  import { onUpdateVote } from "./graphql/subscriptions";
+  import {
+    createUser,
+    updateUser,
+    updateVote,
+    createVote
+  } from "./graphql/mutations";
+  import { onUpdateVote, onCreateVote } from "./graphql/subscriptions";
   import { onMount, onDestroy } from "svelte";
   import Navbar from "./components/Navbar";
   import PlayerLogin from "./components/PlayerLogin";
@@ -19,6 +24,7 @@
   let votes = [];
 
   let updateVoteSub;
+  let createVoteSub;
 
   $: votedUsers = votes.map(vote => vote.user.username);
 
@@ -45,6 +51,15 @@
           votes = updatedVotes;
         }
       });
+
+      createVoteSub = API.graphql(graphqlOperation(onCreateVote)).subscribe({
+        next: ({ value }) => {
+          const newVote = value.data.onCreateVote;
+          const prevVotes = votes.filter(vote => vote.id !== newVote.id);
+          const updatedVotes = [...prevVotes, newVote];
+          votes = updatedVotes;
+        }
+      });
     } catch (err) {
       console.error("Error onMount", err);
     }
@@ -52,6 +67,7 @@
 
   onDestroy(() => {
     updateVoteSub.unsubscribe();
+    createVoteSub.unsubscribe();
   });
 
   function handleAuth(authData) {
@@ -162,12 +178,20 @@
       id: vote.id,
       isComing: detail
     };
-    
+
     await API.graphql(graphqlOperation(updateVote, { input: updateVoteInput }));
   }
 
-  function handleVoteCreate() {
+  async function handleVoteCreate({ detail }) {
     console.log("handleVoteCreate");
+    if (!user) return;
+
+    const createVoteInput = {
+      isComing: detail,
+      voteUserId: user.attributes.sub
+    };
+
+    await API.graphql(graphqlOperation(createVote, { input: createVoteInput }));
   }
 </script>
 
@@ -178,38 +202,39 @@
 <div class="flex justify-between bg-indigo-900 h-10 items-center px-8">
   <span class="text-white">Kilikia Football</span>
   {#if user}
-    <span class="text-white" on:click={handleSignout}>Sign out</span>
+    <span class="text-white cursor-pointer" on:click={handleSignout}>
+      Sign out
+    </span>
   {/if}
 </div>
-
-<ul class="flex flex-col mx-auto w-2/3 mt-8">
-  {#each votes as vote}
-    <li
-      class="flex w-full h-12 cursor-pointer hover:bg-indigo-200 border-b
-      border-grey-light">
-      <span class="w-2/5 flex items-center">{vote.user.username}</span>
-      <span class="w-3/5">
-        <PlayerVote
-          on:vote={details => handleVoteUpdate(vote, details)}
-          vote={vote.isComing} />
-      </span>
-    </li>
-  {/each}
-  <!-- <div>
+<div class="flex flex-col mx-auto w-2/3 mt-8">
+  <ul class="flex flex-col">
+    {#each votes as vote}
+      <li class="flex w-full h-12 cursor-pointer border-b border-grey-light">
+        <span class="w-2/5 flex items-center">{vote.user.username}</span>
+        <span class="w-3/5">
+          <PlayerVote
+            on:vote={details => handleVoteUpdate(vote, details)}
+            vote={vote.isComing} />
+        </span>
+      </li>
+    {/each}
+    <!-- <div>
     <pre>{JSON.stringify(votedUsers, null, 2)}</pre>
   </div> -->
-  {#if user && !votedUsers.includes(user.username)}
-    <li
-      class="flex w-full h-12 cursor-pointer hover:bg-indigo-200 border-b
-      border-grey-light">
-      <span class="w-2/5 flex items-center">{user.username}</span>
-      <span class="w-3/5">
-        <PlayerVote on:vote={handleVoteCreate} />
-      </span>
-    </li>
-  {/if}
-</ul>
+    {#if user && !votedUsers.includes(user.username)}
+      <li class="flex w-full h-12 cursor-pointer border-b border-grey-light">
+        <span class="w-2/5 flex items-center">{user.username}</span>
+        <span class="w-3/5">
+          <PlayerVote on:vote={handleVoteCreate} />
+        </span>
+      </li>
+    {/if}
+  </ul>
 
-{#if !user}
-  <PlayerLogin on:login={handleLogin} {errorMessage} />
-{/if}
+  {#if !user}
+    <div class="flex items-start">
+      <PlayerLogin on:login={handleLogin} {errorMessage} />
+    </div>
+  {/if}
+</div>

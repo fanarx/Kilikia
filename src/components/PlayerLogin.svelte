@@ -76,23 +76,30 @@
 
     border-top: 5px solid black;
   }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+    cursor: pointer;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 4px;
+  }
 </style>
 
-<div
-  class="flex flex-col max-w-sm mx-auto bg-white shadow-lg rounded-lg
-  overflow-hidden">
+<div class="flex flex-col bg-white shadow-lg overflow-hidden w-48">
   <div on:click={toggleDropdown} class="flex h-10 items-center">
     <span
-      class={`w-4/5 text-center cursor-pointer ${!selectedPlayer && 'text-gray-700'}`}>
-      {selectedPlayer ? selectedPlayer.username : '-- Select a player --'}
+      class={`w-4/5 cursor-pointer ${!selectedPlayer && 'text-gray-700 pl-2'}`}>
+      {selectedPlayer ? selectedPlayer.username : 'Log in'}
     </span>
     <span
       class={`${isDropdownOpen ? 'arrow-up' : 'arrow-down'} text-gray-700`} />
   </div>
   {#if isDropdownOpen}
     <ul
-      class="flex flex-col items-center absolute mt-10 bg-white border
-      border-gray-400 left-0 right-0 w-1/2 mx-auto border-t-0">
+      class="flex flex-col items-start absolute mt-10 bg-white border
+      border-gray-400 w-48 border-t-0 h-64 overflow-auto overflow-x-hidden">
       {#each players as player}
         <li
           on:click={() => {
@@ -103,15 +110,15 @@
             selectedPlayer = player;
             toggleDropdown();
           }}
-          class="flex w-full px-6 py-4 h-12 cursor-pointer hover:bg-teal-600">
+          class="flex w-full pl-2 py-4 h-12 cursor-pointer hover:bg-teal-600">
 
-          <span class="w-2/5 inline-block">
+          <span class="w-1/5 inline-block">
             {#if player.confirmed}
               <img class="w-6 h-6" src={sign_confirmed} alt="confirmed" />
             {:else}&nbsp;{/if}
           </span>
 
-          <span class="w-3/5">{player.username}</span>
+          <span class="w-4/5">{player.username}</span>
         </li>
       {/each}
     </ul>

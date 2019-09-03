@@ -26,6 +26,8 @@
   let updateVoteSub;
   let createVoteSub;
 
+  let openWarningModal;
+
   $: votedUsers = votes.map(vote => vote.user.username);
 
   onMount(async () => {
@@ -120,6 +122,7 @@
 
         console.log("handleLogin: loggedUser", loggedUser);
       }
+      openWarningModal = false;
     } catch (err) {
       console.log("auth err: ", err);
       errorMessage = err.message;
@@ -183,7 +186,6 @@
   }
 
   async function handleVoteCreate({ detail }) {
-    console.log("handleVoteCreate");
     if (!user) return;
 
     const createVoteInput = {
@@ -193,22 +195,53 @@
 
     await API.graphql(graphqlOperation(createVote, { input: createVoteInput }));
   }
+
+  function handlePlayerListClick() {
+    if (!user) {
+      openWarningModal = true;
+    }
+  }
+
+  function handleWarningClick(e) {
+    e.stopPropagation();
+    openWarningModal = false;
+  }
 </script>
 
 <style>
 
 </style>
 
-<div class="flex justify-between bg-indigo-900 h-10 items-center px-8">
-  <span class="text-white">Kilikia Football</span>
+<div class="flex justify-between bg-indigo-900 h-10 px-8">
+  <span class="flex items-center text-white h-10">Kilikia Football</span>
   {#if user}
-    <span class="text-white cursor-pointer" on:click={handleSignout}>
+    <span
+      class="flex items-center text-white cursor-pointer"
+      on:click={handleSignout}>
       Sign out
     </span>
+  {:else if !openWarningModal}
+    <div class="flex items-start">
+      <PlayerLogin on:login={handleLogin} {errorMessage} navbarMode />
+    </div>
   {/if}
 </div>
 <div class="flex flex-col mx-auto w-2/3 mt-8">
-  <ul class="flex flex-col">
+  <ul on:click={handlePlayerListClick} class="flex flex-col relative">
+    {#if !user && openWarningModal}
+      <div
+        class="flex items-center justify-center bg-gray-600 w-full h-full
+        absolute opacity-75">
+        <button
+          on:click={handleWarningClick}
+          class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold
+          hover:text-white py-2 px-4 border border-blue-500
+          hover:border-transparent rounded">
+          Ok
+        </button>
+        <PlayerLogin on:login={handleLogin} {errorMessage} />
+      </div>
+    {/if}
     {#each votes as vote}
       <li class="flex w-full h-12 cursor-pointer border-b border-grey-light">
         <span class="w-2/5 flex items-center">{vote.user.username}</span>
@@ -231,10 +264,4 @@
       </li>
     {/if}
   </ul>
-
-  {#if !user}
-    <div class="flex items-start">
-      <PlayerLogin on:login={handleLogin} {errorMessage} />
-    </div>
-  {/if}
 </div>

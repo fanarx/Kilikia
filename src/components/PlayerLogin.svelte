@@ -7,6 +7,8 @@
   const dispatch = createEventDispatcher();
 
   export let errorMessage;
+  export let navbarMode;
+
   let players = [];
   let confirmPassword = null;
   let password = "";
@@ -77,6 +79,14 @@
     border-top: 5px solid black;
   }
 
+  .arrow-up.nav {
+    border-bottom: 5px solid white;
+  }
+
+  .arrow-down.nav {
+    border-top: 5px solid white;
+  }
+
   ::-webkit-scrollbar {
     width: 4px;
     cursor: pointer;
@@ -87,14 +97,16 @@
   }
 </style>
 
-<div class="flex flex-col bg-white shadow-lg overflow-hidden w-48">
-  <div on:click={toggleDropdown} class="flex h-10 items-center">
+<div class={`flex flex-col bg-white overflow-hidden w-48 z-10 `}>
+  <div
+    on:click={toggleDropdown}
+    class={`flex h-10 items-center ${navbarMode && 'bg-indigo-900'}`}>
     <span
-      class={`w-4/5 cursor-pointer ${!selectedPlayer && 'text-gray-700 pl-2'}`}>
+      class={`w-4/5 cursor-pointer text-center ${navbarMode ? 'text-white' : 'text-gray-700'} ${!selectedPlayer && 'pl-2'}`}>
       {selectedPlayer ? selectedPlayer.username : 'Log in'}
     </span>
     <span
-      class={`${isDropdownOpen ? 'arrow-up' : 'arrow-down'} text-gray-700`} />
+      class={`${isDropdownOpen ? 'arrow-up' : 'arrow-down'} ${navbarMode && 'nav'}`} />
   </div>
   {#if isDropdownOpen}
     <ul
@@ -123,39 +135,43 @@
       {/each}
     </ul>
   {:else if !isDropdownOpen && selectedPlayer && selectedPlayer.username}
-    {#if selectedPlayer.confirmed}
-      <input
-        class="border py-2 px-3 text-grey-darkest"
-        type="password"
-        bind:value={password}
-        placeholder="Password" />
-    {:else}
-      <input
-        class="border py-2 px-3 text-grey-darkest mb-3"
-        type="password"
-        bind:value={password}
-        placeholder="Password" />
-      <input
-        class="border py-2 px-3 text-grey-darkest"
-        type="password"
-        bind:value={confirmPassword}
-        placeholder="Confirm Password" />
-    {/if}
-    {#if passwordLengthError}
-      <p class="text-red-500">Password is empty</p>
-    {/if}
-    {#if passwordMatchError}
-      <p class="text-red-500">Passwords do not match</p>
-    {/if}
-    {#if errorMessage}
-      <p class="text-red-500">{errorMessage}</p>
-    {/if}
-    <button
-      class="block bg-teal-500 hover:bg-teal-700 text-white uppercase py-2 px-8
-      m-3 mx-auto rounded"
-      type="submit"
-      on:click={loginPlayer}>
-      {selectedPlayer.confirmed ? 'Login' : 'Sign up'}
-    </button>
+    <div
+      class="flex flex-col items-start absolute mt-10 bg-white border
+      border-gray-400 w-48 border-t-0 overflow-auto overflow-x-hidden">
+      {#if selectedPlayer.confirmed}
+        <input
+          class="border py-2 px-3 text-grey-darkest"
+          type="password"
+          bind:value={password}
+          placeholder="Password" />
+      {:else}
+        <input
+          class="border py-2 px-3 text-grey-darkest mb-3"
+          type="password"
+          bind:value={password}
+          placeholder="Password" />
+        <input
+          class="border py-2 px-3 text-grey-darkest"
+          type="password"
+          bind:value={confirmPassword}
+          placeholder="Confirm Password" />
+      {/if}
+      {#if passwordLengthError}
+        <p class="text-red-500">Password is empty</p>
+      {/if}
+      {#if passwordMatchError}
+        <p class="text-red-500">Passwords do not match</p>
+      {/if}
+      {#if errorMessage}
+        <p class="text-red-500">{errorMessage}</p>
+      {/if}
+      <button
+        class="block bg-teal-500 hover:bg-teal-700 text-white uppercase py-2
+        px-8 m-3 mx-auto rounded"
+        type="submit"
+        on:click={loginPlayer}>
+        {selectedPlayer.confirmed ? 'Login' : 'Sign up'}
+      </button>
+    </div>
   {/if}
 </div>

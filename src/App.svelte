@@ -202,14 +202,16 @@
     }
   }
 
-  function handleWarningClick(e) {
+  function closeWarningModal(e) {
     e.stopPropagation();
     openWarningModal = false;
   }
 </script>
 
 <style>
-
+  .with-opacity {
+    background: rgba(113,128,150, 0.5);
+  }
 </style>
 
 <div class="flex justify-between bg-indigo-900 h-10 px-8">
@@ -231,14 +233,7 @@
     {#if !user && openWarningModal}
       <div
         class="flex items-center justify-center bg-gray-600 w-full h-full
-        absolute opacity-75">
-        <button
-          on:click={handleWarningClick}
-          class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold
-          hover:text-white py-2 px-4 border border-blue-500
-          hover:border-transparent rounded">
-          Ok
-        </button>
+        absolute with-opacity">
         <PlayerLogin on:login={handleLogin} {errorMessage} />
       </div>
     {/if}

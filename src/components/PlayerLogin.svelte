@@ -100,9 +100,9 @@
 <div class={`flex flex-col bg-white overflow-hidden w-48 z-10 `}>
   <div
     on:click={toggleDropdown}
-    class={`flex h-10 items-center ${navbarMode && 'bg-indigo-900'}`}>
+    class={`flex h-10 items-center ${navbarMode ? 'bg-indigo-900' : 'bg-white'}`}>
     <span
-      class={`w-4/5 cursor-pointer text-center ${navbarMode ? 'text-white' : 'text-gray-700'} ${!selectedPlayer && 'pl-2'}`}>
+      class={`w-4/5  cursor-pointer pr-3 ${navbarMode ? 'text-white' : 'text-gray-700'} ${selectedPlayer ? 'text-left pl-4' : navbarMode ? 'text-right pl-2' : 'text-center'}`}>
       {selectedPlayer ? selectedPlayer.username : 'Log in'}
     </span>
     <span
@@ -149,7 +149,7 @@
           class="border py-2 px-3 text-grey-darkest mb-3"
           type="password"
           bind:value={password}
-          placeholder="Password" />
+          placeholder="New Password" />
         <input
           class="border py-2 px-3 text-grey-darkest"
           type="password"

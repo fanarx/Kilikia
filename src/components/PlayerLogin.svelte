@@ -33,7 +33,8 @@
     }
   });
 
-  function toggleDropdown() {
+  function toggleDropdown(e) {
+    e.stopPropagation();
     isDropdownOpen = !isDropdownOpen;
   }
 
@@ -57,6 +58,10 @@
       password,
       isConfirmed: selectedPlayer.confirmed
     });
+  }
+
+  function closeDropdown() {
+    isDropdownOpen = false;
   }
 </script>
 
@@ -97,6 +102,8 @@
   }
 </style>
 
+<svelte:window on:click={closeDropdown} />
+
 <div class={`flex flex-col bg-white overflow-hidden w-48 z-10 `}>
   <div
     on:click={toggleDropdown}
@@ -114,13 +121,13 @@
       border-gray-400 w-48 border-t-0 h-64 overflow-auto overflow-x-hidden">
       {#each players as player}
         <li
-          on:click={() => {
+          on:click={e => {
             password = '';
             confirmPassword = null;
             isLogging = false;
             errorMessage = '';
             selectedPlayer = player;
-            toggleDropdown();
+            toggleDropdown(e);
           }}
           class="flex w-full pl-2 py-4 h-12 cursor-pointer hover:bg-teal-600">
 

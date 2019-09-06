@@ -2,8 +2,13 @@
   "name": "svelte-app",
   "version": "1.0.0",
   "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
     "@fullhuman/postcss-purgecss": "^1.2.0",
     "autoprefixer": "^9.6.0",
+    "babel-loader": "^8.0.6",
+    "babel-plugin-add-module-exports": "^1.0.2",
+    "@babel/plugin-proposal-object-rest-spread": "^7.5.2",
     "cross-env": "^5.2.0",
     "css-loader": "^2.1.1",
     "cssnano": "^4.1.10",
@@ -32,9 +37,12 @@
     "webpack-dev-server": "^3.3.1"
   },
   "dependencies": {
-    "@aws-amplify/api": "^1.0.42",
-    "@aws-amplify/auth": "^1.2.31",
-    "@aws-amplify/core": "^1.1.0"
+    "@aws-amplify/api": "latest",
+    "@aws-amplify/auth": "latest",
+    "@aws-amplify/core": "latest",
+    "@aws-amplify/pubsub": "latest",
+    "core-js": "^3.2.1",
+    "regenerator-runtime": "^0.13.3"
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack",

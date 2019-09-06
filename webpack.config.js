@@ -3,6 +3,13 @@ const path = require('path');
 const autoPreprocess = require('svelte-preprocess');
 const mode = process.env.NODE_ENV || 'development';
 const prod = mode === 'production';
+const supportedBrowsers = ['>1%', 'last 4 versions', 'Firefox ESR', 'not ie < 9'];
+const babelLoader = {
+  loader: 'babel-loader',
+  options: {
+    presets: [['@babel/preset-env', { targets: supportedBrowsers }]]
+  }
+};
 //const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 // purgecss({
@@ -57,15 +64,25 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.m?js$/,
+        // Babel must transpile svelte helper files for older browsers.
+        exclude: /node_modules\/(?!svelte)/,
+        use: babelLoader
+      },
+      {
         test: /\.svelte$/,
-        use: {
-          loader: 'svelte-loader',
-          options: {
-            preprocess: sveltPreprocess,
-            emitCss: true,
-            hotReload: true
+        exclude: /node_modules/,
+        use: [
+          babelLoader,
+          {
+            loader: 'svelte-loader',
+            options: {
+              preprocess: sveltPreprocess,
+              emitCss: true,
+              hotReload: true
+            }
           }
-        }
+        ]
       },
       {
         test: /\.css$/,

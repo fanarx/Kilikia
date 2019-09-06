@@ -15,6 +15,7 @@
   import Navbar from "./components/Navbar";
   import PlayerLogin from "./components/PlayerLogin";
   import PlayerVote from "./components/PlayerVote";
+  import sign_close from "./images/sign_close.svg";
 
   let user = null;
 
@@ -181,8 +182,13 @@
       id: vote.id,
       isComing: detail
     };
-
-    await API.graphql(graphqlOperation(updateVote, { input: updateVoteInput }));
+    try {
+      await API.graphql(
+        graphqlOperation(updateVote, { input: updateVoteInput })
+      );
+    } catch (err) {
+      console.log("updateVote err:", err);
+    }
   }
 
   async function handleVoteCreate({ detail }) {
@@ -192,8 +198,13 @@
       isComing: detail,
       voteUserId: user.attributes.sub
     };
-
-    await API.graphql(graphqlOperation(createVote, { input: createVoteInput }));
+    try {
+      await API.graphql(
+        graphqlOperation(createVote, { input: createVoteInput })
+      );
+    } catch (err) {
+      console.log("createVote err:", err);
+    }
   }
 
   function handlePlayerListClick() {
@@ -206,11 +217,15 @@
     e.stopPropagation();
     openWarningModal = false;
   }
+
+  function isActive(vote) {
+    return user.attributes.sub === vote.user.id;
+  }
 </script>
 
 <style>
   .with-opacity {
-    background: rgba(113,128,150, 0.5);
+    background: rgba(113, 128, 150, 0.5);
   }
 </style>
 
@@ -234,12 +249,21 @@
       <div
         class="flex items-center justify-center bg-gray-600 w-full h-full
         absolute with-opacity">
+        <img
+          on:click={closeWarningModal}
+          class="w-8 h-8 absolute top-0 right-0 m-2 cursor-pointer"
+          src={sign_close}
+          alt="Close" />
         <PlayerLogin on:login={handleLogin} {errorMessage} />
       </div>
     {/if}
     {#each votes as vote}
-      <li class="flex w-full h-12 cursor-pointer border-b border-grey-light">
-        <span class="w-2/5 flex items-center">{vote.user.username}</span>
+      <li
+        class={`flex w-full h-12 cursor-pointer ${user && isActive(vote) ? 'border-b-2 border-gray-600' : 'border-b border-gray-300'}`}>
+        <span
+          class={`w-2/5 flex items-center ${user && isActive(vote) ? 'font-bold' : 'font-normal'}`}>
+          {vote.user.username}
+        </span>
         <span class="w-3/5">
           <PlayerVote
             on:vote={details => handleVoteUpdate(vote, details)}
@@ -251,7 +275,7 @@
     <pre>{JSON.stringify(votedUsers, null, 2)}</pre>
   </div> -->
     {#if user && !votedUsers.includes(user.username)}
-      <li class="flex w-full h-12 cursor-pointer border-b border-grey-light">
+      <li class="flex w-full h-12 cursor-pointer border-b border-grey-200">
         <span class="w-2/5 flex items-center">{user.username}</span>
         <span class="w-3/5">
           <PlayerVote on:vote={handleVoteCreate} />

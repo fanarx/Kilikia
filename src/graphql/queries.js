@@ -16,6 +16,14 @@ export const getUser = `query GetUser($id: ID!) {
       }
       createdAt
     }
+    messages {
+      items {
+        id
+        content
+        createdAt
+      }
+      nextToken
+    }
   }
 }
 `;
@@ -33,6 +41,9 @@ export const listUsers = `query ListUsers(
         id
         isComing
         createdAt
+      }
+      messages {
+        nextToken
       }
     }
     nextToken
@@ -52,6 +63,9 @@ export const getVote = `query GetVote($id: ID!) {
         isComing
         createdAt
       }
+      messages {
+        nextToken
+      }
     }
     createdAt
   }
@@ -67,6 +81,47 @@ export const listVotes = `query ListVotes(
       id
       isComing
       user {
+        id
+        username
+        confirmed
+      }
+      createdAt
+    }
+    nextToken
+  }
+}
+`;
+export const getMessage = `query GetMessage($id: ID!) {
+  getMessage(id: $id) {
+    id
+    content
+    author {
+      id
+      username
+      confirmed
+      vote {
+        id
+        isComing
+        createdAt
+      }
+      messages {
+        nextToken
+      }
+    }
+    createdAt
+  }
+}
+`;
+export const listMessages = `query ListMessages(
+  $filter: ModelMessageFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listMessages(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      content
+      author {
         id
         username
         confirmed

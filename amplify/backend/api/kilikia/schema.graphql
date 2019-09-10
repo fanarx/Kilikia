@@ -9,11 +9,19 @@ type User @model {
   username: String!
   confirmed: Boolean
   vote: Vote @connection(name: "UserVote")
+  messages: [Message] @connection(name: "UserMessages", sortField: "createdAt")
 }
 
 type Vote @model {
   id: ID!
   isComing: VoteEnum
   user: User @connection(name: "UserVote")
+  createdAt: String
+}
+
+type Message @model {
+  id: ID!
+  content: String!
+  author: User! @connection(name: "UserMessages")
   createdAt: String
 }

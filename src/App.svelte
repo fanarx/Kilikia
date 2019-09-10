@@ -12,6 +12,7 @@
   } from "./graphql/mutations";
   import { onUpdateVote, onCreateVote } from "./graphql/subscriptions";
   import { onMount, onDestroy } from "svelte";
+  import { fade } from "svelte/transition";
   import Navbar from "./components/Navbar";
   import PlayerLogin from "./components/PlayerLogin";
   import PlayerVote from "./components/PlayerVote";
@@ -247,6 +248,7 @@
   <ul on:click={handlePlayerListClick} class="flex flex-col relative">
     {#if !user && openWarningModal}
       <div
+        transition:fade
         class="flex items-center justify-center bg-gray-600 w-full h-full
         absolute with-opacity">
         <img

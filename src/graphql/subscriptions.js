@@ -16,6 +16,14 @@ export const onCreateUser = `subscription OnCreateUser {
       }
       createdAt
     }
+    messages {
+      items {
+        id
+        content
+        createdAt
+      }
+      nextToken
+    }
   }
 }
 `;
@@ -33,6 +41,14 @@ export const onUpdateUser = `subscription OnUpdateUser {
         confirmed
       }
       createdAt
+    }
+    messages {
+      items {
+        id
+        content
+        createdAt
+      }
+      nextToken
     }
   }
 }
@@ -52,6 +68,14 @@ export const onDeleteUser = `subscription OnDeleteUser {
       }
       createdAt
     }
+    messages {
+      items {
+        id
+        content
+        createdAt
+      }
+      nextToken
+    }
   }
 }
 `;
@@ -67,6 +91,9 @@ export const onCreateVote = `subscription OnCreateVote {
         id
         isComing
         createdAt
+      }
+      messages {
+        nextToken
       }
     }
     createdAt
@@ -86,6 +113,9 @@ export const onUpdateVote = `subscription OnUpdateVote {
         isComing
         createdAt
       }
+      messages {
+        nextToken
+      }
     }
     createdAt
   }
@@ -103,6 +133,72 @@ export const onDeleteVote = `subscription OnDeleteVote {
         id
         isComing
         createdAt
+      }
+      messages {
+        nextToken
+      }
+    }
+    createdAt
+  }
+}
+`;
+export const onCreateMessage = `subscription OnCreateMessage {
+  onCreateMessage {
+    id
+    content
+    author {
+      id
+      username
+      confirmed
+      vote {
+        id
+        isComing
+        createdAt
+      }
+      messages {
+        nextToken
+      }
+    }
+    createdAt
+  }
+}
+`;
+export const onUpdateMessage = `subscription OnUpdateMessage {
+  onUpdateMessage {
+    id
+    content
+    author {
+      id
+      username
+      confirmed
+      vote {
+        id
+        isComing
+        createdAt
+      }
+      messages {
+        nextToken
+      }
+    }
+    createdAt
+  }
+}
+`;
+export const onDeleteMessage = `subscription OnDeleteMessage {
+  onDeleteMessage {
+    id
+    content
+    author {
+      id
+      username
+      confirmed
+      vote {
+        id
+        isComing
+        createdAt
+      }
+      messages {
+        nextToken
       }
     }
     createdAt

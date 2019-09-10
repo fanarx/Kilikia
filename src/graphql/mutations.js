@@ -16,6 +16,14 @@ export const createUser = `mutation CreateUser($input: CreateUserInput!) {
       }
       createdAt
     }
+    messages {
+      items {
+        id
+        content
+        createdAt
+      }
+      nextToken
+    }
   }
 }
 `;
@@ -33,6 +41,14 @@ export const updateUser = `mutation UpdateUser($input: UpdateUserInput!) {
         confirmed
       }
       createdAt
+    }
+    messages {
+      items {
+        id
+        content
+        createdAt
+      }
+      nextToken
     }
   }
 }
@@ -52,6 +68,14 @@ export const deleteUser = `mutation DeleteUser($input: DeleteUserInput!) {
       }
       createdAt
     }
+    messages {
+      items {
+        id
+        content
+        createdAt
+      }
+      nextToken
+    }
   }
 }
 `;
@@ -67,6 +91,9 @@ export const createVote = `mutation CreateVote($input: CreateVoteInput!) {
         id
         isComing
         createdAt
+      }
+      messages {
+        nextToken
       }
     }
     createdAt
@@ -86,6 +113,9 @@ export const updateVote = `mutation UpdateVote($input: UpdateVoteInput!) {
         isComing
         createdAt
       }
+      messages {
+        nextToken
+      }
     }
     createdAt
   }
@@ -103,6 +133,72 @@ export const deleteVote = `mutation DeleteVote($input: DeleteVoteInput!) {
         id
         isComing
         createdAt
+      }
+      messages {
+        nextToken
+      }
+    }
+    createdAt
+  }
+}
+`;
+export const createMessage = `mutation CreateMessage($input: CreateMessageInput!) {
+  createMessage(input: $input) {
+    id
+    content
+    author {
+      id
+      username
+      confirmed
+      vote {
+        id
+        isComing
+        createdAt
+      }
+      messages {
+        nextToken
+      }
+    }
+    createdAt
+  }
+}
+`;
+export const updateMessage = `mutation UpdateMessage($input: UpdateMessageInput!) {
+  updateMessage(input: $input) {
+    id
+    content
+    author {
+      id
+      username
+      confirmed
+      vote {
+        id
+        isComing
+        createdAt
+      }
+      messages {
+        nextToken
+      }
+    }
+    createdAt
+  }
+}
+`;
+export const deleteMessage = `mutation DeleteMessage($input: DeleteMessageInput!) {
+  deleteMessage(input: $input) {
+    id
+    content
+    author {
+      id
+      username
+      confirmed
+      vote {
+        id
+        isComing
+        createdAt
+      }
+      messages {
+        nextToken
       }
     }
     createdAt

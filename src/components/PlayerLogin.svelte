@@ -1,6 +1,7 @@
 <script>
   import API, { graphqlOperation } from "@aws-amplify/api";
   import { createEventDispatcher, onMount, tick } from "svelte";
+  import { fly } from "svelte/transition";
   import { listUsers } from "../graphql/queries";
   import sign_confirmed from "../images/sign_confirmed.svg";
 
@@ -62,6 +63,7 @@
 
   function closeDropdown() {
     isDropdownOpen = false;
+    selectedPlayer = null;
   }
 </script>
 
@@ -109,7 +111,7 @@
     on:click={toggleDropdown}
     class={`flex h-10 items-center ${navbarMode ? 'bg-indigo-900' : 'bg-white'}`}>
     <span
-      class={`w-4/5  cursor-pointer pr-3 ${navbarMode ? 'text-white' : 'text-gray-700'} ${selectedPlayer ? 'text-left pl-4' : navbarMode ? 'text-right pl-2' : 'text-center'}`}>
+      class={`w-4/5  cursor-pointer pr-3 ${navbarMode ? 'text-white' : 'text-gray-700'} ${selectedPlayer ? 'text-center pl-4' : navbarMode ? 'text-right pl-2' : 'text-center'}`}>
       {selectedPlayer ? selectedPlayer.username : 'Log in'}
     </span>
     <span
@@ -117,6 +119,7 @@
   </div>
   {#if isDropdownOpen}
     <ul
+      transition:fly
       class="flex flex-col items-start absolute mt-10 bg-white border
       border-gray-400 w-48 border-t-0 h-64 overflow-auto overflow-x-hidden">
       {#each players as player}
@@ -143,6 +146,8 @@
     </ul>
   {:else if !isDropdownOpen && selectedPlayer && selectedPlayer.username}
     <div
+      transition:fly
+      on:click={e => e.stopPropagation()}
       class="flex flex-col items-start absolute mt-10 bg-white border
       border-gray-400 w-48 border-t-0 overflow-auto overflow-x-hidden">
       {#if selectedPlayer.confirmed}

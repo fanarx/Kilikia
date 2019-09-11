@@ -286,5 +286,7 @@
       </li>
     {/if}
   </ul>
-  <MessageBox />
+  {#if user}
+    <MessageBox user={user.attributes} />
+  {/if}
 </div>

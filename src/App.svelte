@@ -16,6 +16,7 @@
   import Navbar from "./components/Navbar";
   import PlayerLogin from "./components/PlayerLogin";
   import PlayerVote from "./components/PlayerVote";
+  import MessageBox from "./components/MessageBox";
   import sign_close from "./images/sign_close.svg";
 
   let user = null;
@@ -248,7 +249,7 @@
   <ul on:click={handlePlayerListClick} class="flex flex-col relative">
     {#if !user && openWarningModal}
       <div
-        transition:fade
+        transition:fade={{ duration: 200 }}
         class="flex items-center justify-center bg-gray-600 w-full h-full
         absolute with-opacity">
         <img
@@ -285,4 +286,5 @@
       </li>
     {/if}
   </ul>
+  <MessageBox />
 </div>

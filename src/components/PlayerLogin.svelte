@@ -119,7 +119,7 @@
   </div>
   {#if isDropdownOpen}
     <ul
-      transition:fly
+      transition:fly={{ duration: 250 }}
       class="flex flex-col items-start absolute mt-10 bg-white border
       border-gray-400 w-48 border-t-0 h-64 overflow-auto overflow-x-hidden">
       {#each players as player}

@@ -3,6 +3,7 @@
   import { createMessage } from "../graphql/mutations";
   import { onCreateMessage } from "../graphql/subscriptions";
   import { onMount, onDestroy } from "svelte";
+  import { slide } from "svelte/transition";
   import API, { graphqlOperation } from "@aws-amplify/api";
 
   export let user;
@@ -10,10 +11,13 @@
   let messages = [];
   let messageText = "";
   let createMessageSub;
+  let isChatOpen = false;
 
   onMount(async () => {
     try {
-      const { data } = await API.graphql(graphqlOperation(listMessages));
+      const { data } = await API.graphql(
+        graphqlOperation(listMessages, { limit: 500 })
+      );
 
       messages = data.listMessages.items;
 
@@ -23,7 +27,9 @@
         next: ({ value }) => {
           const newMessage = value.data.onCreateMessage;
           const updatedMessages = [...messages, newMessage];
-          messages = updatedMessages;
+          messages = updatedMessages.sort(
+            (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+          );
           messageText = "";
         }
       });
@@ -37,8 +43,11 @@
   });
 
   async function handleMessageSend({ detail }) {
+    if (messageText.trim() === "") return;
+
+    const newContent = messageText.replace(/\r?\n/g, "<br />");
     const createMessageInput = {
-      content: messageText,
+      content: newContent,
       messageAuthorId: user.sub
     };
 
@@ -56,6 +65,10 @@
     return `${date.getMonth() +
       1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
   }
+
+  function toggleChat() {
+    isChatOpen = !isChatOpen;
+  }
 </script>
 
 <style>
@@ -67,35 +80,69 @@
     background: #cbd5e0;
     border-radius: 4px;
   }
+  .vh65 {
+    height: 65vh;
+  }
 </style>
 
-<div class="flex flex-col mx-auto w-full mt-8">
-  <div
-    class="flex flex-col h-48 overflow-auto overflow-x-hidden border
-    border-gray-400 border-b-0">
-    {#each messages as message}
-      <div class="flex items-start mb-4 pl-2 text-sm">
-        <div class="flex-1 overflow-hidden">
-          <div>
-            <span class="font-bold">{message.author.username}</span>
-            <span class="text-grey text-xs">
-              {formatDate(message.createdAt)}
-            </span>
-          </div>
-          <p class="text-black leading-normal">{message.content}</p>
+{#if isChatOpen}
+  <div class="flex justify-center">
+    <div
+      transition:slide={{ y: 1200, duration: 1500 }}
+      class="vh65 flex flex-col sm:w-2/3 mt-8 w-full bottom-0 fixed">
+      <div
+        class="flex items-center space-between rounded-t-lg bg-green-600
+        text-white h-8">
+        <span class="pl-3">Kilikia Chat</span>
+        <div
+          on:click={toggleChat}
+          class="w-12 h-8 ml-auto cursor-pointer flex items-center justify-end
+          pr-3">
+          <span class="nav arrow-down" />
         </div>
       </div>
-    {/each}
+      <div
+        class="flex flex-col overflow-auto overflow-x-hidden border
+        border-gray-400 border-b-0 bg-gray-100 pt-4 pr-4 pl-1 flex-1">
+        {#each messages as message}
+          <div
+            class="flex items-start mb-2 pl-2 pb-2 text-sm bg-green-200 rounded">
+            <div class="flex-1 overflow-hidden">
+              <div>
+                <span class="font-bold">{message.author.username}</span>
+                <span class="text-grey text-xs">
+                  {formatDate(message.createdAt)}
+                </span>
+              </div>
+              <p class="text-black leading-normal">
+                {@html message.content}
+              </p>
+            </div>
+          </div>
+        {/each}
+      </div>
+      <div class="flex h-1/3">
+        <textarea
+          placeholder="message..."
+          bind:value={messageText}
+          class="text-sm w-full shadow-inner p-2 rounded-bl-lg border-2
+          border-grey"
+          rows="4" />
+        <button
+          on:click={handleMessageSend}
+          class="border-2 border-grey rounded-br-lg">
+          Send
+        </button>
+      </div>
+    </div>
   </div>
-  <div class="flex">
-    <textarea
-      bind:value={messageText}
-      class="text-sm w-full shadow-inner p-2 rounded-l-lg border-2 border-grey"
-      rows="4" />
-    <button
-      on:click={handleMessageSend}
-      class="border-2 border-grey rounded-r-lg">
-      Send
-    </button>
+{:else}
+  <div class="flex justify-end mr-16">
+    <div
+      on:click={toggleChat}
+      class="flex items-center bottom-0 fixed rounded-t-lg bg-green-600
+      text-white h-8 cursor-pointer p-3 shadow-md">
+      Open Chat
+    </div>
   </div>
-</div>
+{/if}

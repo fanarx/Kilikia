@@ -25,7 +25,7 @@
 
   onMount(async () => {
     try {
-      const { data } = await API.graphql(graphqlOperation(listUsers));
+      const { data } = await API.graphql(graphqlOperation(listUsers, {limit: 100}));
 
       console.log("data", data);
       players = data.listUsers.items;
@@ -68,32 +68,6 @@
 </script>
 
 <style>
-  .arrow-up {
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-
-    border-bottom: 5px solid black;
-  }
-
-  .arrow-down {
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-
-    border-top: 5px solid black;
-  }
-
-  .arrow-up.nav {
-    border-bottom: 5px solid white;
-  }
-
-  .arrow-down.nav {
-    border-top: 5px solid white;
-  }
-
   ::-webkit-scrollbar {
     width: 4px;
     cursor: pointer;

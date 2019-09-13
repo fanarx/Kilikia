@@ -38,7 +38,7 @@
     Hub.listen("auth", handleAuth);
 
     try {
-      const { data } = await API.graphql(graphqlOperation(listVotes));
+      const { data } = await API.graphql(graphqlOperation(listVotes, {limit: 100}));
 
       console.log("listVotes data", data);
       votes = data.listVotes.items;
@@ -109,8 +109,6 @@
 
   async function handleLogin({ detail: { username, password, isConfirmed } }) {
     try {
-      console.log("username, password", username, password);
-
       const loginPassword = isConfirmed ? password.concat("808990") : "kilikia";
       const signedUser = await Auth.signIn({
         username,
@@ -286,7 +284,7 @@
       </li>
     {/if}
   </ul>
+</div>
   {#if user}
     <MessageBox user={user.attributes} />
   {/if}
-</div>

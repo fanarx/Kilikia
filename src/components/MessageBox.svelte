@@ -49,7 +49,7 @@
   }
 
   async function handleMessageSend({ detail }) {
-    if (isMessageEmpty) return;
+    if (isMessageEmpty()) return;
 
     const newContent = messageText.replace(/\r?\n/g, "<br />");
     const createMessageInput = {
@@ -134,15 +134,16 @@
           class="text-sm w-full shadow-inner p-2 rounded-bl-lg border-2
           border-grey outline-none"
           rows="4" />
-        <button
+        <div
           on:click={handleMessageSend}
-          class="border-2 border-grey rounded-br-lg outline-none">
+          class={`flex items-center border-2 border-grey rounded-br-lg
+          outline-none ${messageText.trim() === '' ? '' : 'cursor-pointer'}`}>
           {#if isMessageEmpty()}
             <img class="w-10 h-10" src={sign_send_passive} alt="send" />
           {:else}
             <img class="w-10 h-10" src={sign_send_active} alt="send" />
           {/if}
-        </button>
+        </div>
       </div>
     </div>
   </div>

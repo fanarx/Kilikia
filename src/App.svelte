@@ -16,6 +16,7 @@
   import Navbar from "./components/Navbar";
   import PlayerLogin from "./components/PlayerLogin";
   import PlayerVote from "./components/PlayerVote";
+  import VoteCounter from "./components/VoteCounter";
   import MessageBox from "./components/MessageBox";
   import sign_close from "./images/sign_close.svg";
 
@@ -38,7 +39,9 @@
     Hub.listen("auth", handleAuth);
 
     try {
-      const { data } = await API.graphql(graphqlOperation(listVotes, {limit: 100}));
+      const { data } = await API.graphql(
+        graphqlOperation(listVotes, { limit: 100 })
+      );
 
       console.log("listVotes data", data);
       votes = data.listVotes.items;
@@ -230,7 +233,9 @@
 </style>
 
 <div class="flex justify-between bg-indigo-900 h-10 px-8">
-  <span class="flex items-center text-white h-10">Kilikia Football</span>
+  <span class="flex items-center text-white h-10 font-semibold">
+    Kilikia Football
+  </span>
   {#if user}
     <span
       class="flex items-center text-white cursor-pointer"
@@ -257,6 +262,14 @@
           alt="Close" />
         <PlayerLogin on:login={handleLogin} {errorMessage} />
       </div>
+    {/if}
+    {#if votes.length > 0}
+      <li class={`flex w-full h-12 cursor-pointer`}>
+        <span class={`w-2/5 flex items-center`}>&nbsp;</span>
+        <span class="w-3/5">
+          <VoteCounter {votes} />
+        </span>
+      </li>
     {/if}
     {#each votes as vote}
       <li
@@ -285,6 +298,6 @@
     {/if}
   </ul>
 </div>
-  {#if user}
-    <MessageBox user={user.attributes} />
-  {/if}
+{#if user}
+  <MessageBox user={user.attributes} />
+{/if}

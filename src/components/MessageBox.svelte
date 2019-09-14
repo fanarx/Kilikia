@@ -5,6 +5,8 @@
   import { onMount, onDestroy } from "svelte";
   import { slide } from "svelte/transition";
   import API, { graphqlOperation } from "@aws-amplify/api";
+  import sign_send_active from "../images/sign_send_active.svg";
+  import sign_send_passive from "../images/sign_send_passive.svg";
 
   export let user;
 
@@ -42,8 +44,12 @@
     createMessageSub.unsubscribe();
   });
 
+  function isMessageEmpty() {
+    return messageText.trim() === "";
+  }
+
   async function handleMessageSend({ detail }) {
-    if (messageText.trim() === "") return;
+    if (isMessageEmpty) return;
 
     const newContent = messageText.replace(/\r?\n/g, "<br />");
     const createMessageInput = {
@@ -93,7 +99,7 @@
       <div
         class="flex items-center space-between rounded-t-lg bg-green-600
         text-white h-8">
-        <span class="pl-3">Kilikia Chat</span>
+        <span class="pl-3 font-semibold">Kilikia Chat</span>
         <div
           on:click={toggleChat}
           class="w-12 h-8 ml-auto cursor-pointer flex items-center justify-end
@@ -126,12 +132,16 @@
           placeholder="message..."
           bind:value={messageText}
           class="text-sm w-full shadow-inner p-2 rounded-bl-lg border-2
-          border-grey"
+          border-grey outline-none"
           rows="4" />
         <button
           on:click={handleMessageSend}
-          class="border-2 border-grey rounded-br-lg">
-          Send
+          class="border-2 border-grey rounded-br-lg outline-none">
+          {#if isMessageEmpty()}
+            <img class="w-10 h-10" src={sign_send_passive} alt="send" />
+          {:else}
+            <img class="w-10 h-10" src={sign_send_active} alt="send" />
+          {/if}
         </button>
       </div>
     </div>
@@ -141,7 +151,7 @@
     <div
       on:click={toggleChat}
       class="flex items-center bottom-0 fixed rounded-t-lg bg-green-600
-      text-white h-8 cursor-pointer p-3 shadow-md">
+      text-white h-8 cursor-pointer p-3 shadow-md font-semibold">
       Open Chat
     </div>
   </div>

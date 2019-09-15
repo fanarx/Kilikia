@@ -67,9 +67,13 @@
   }
 
   function formatDate(dateText) {
+    function addLeadingZero(dateText) {
+      return ("0" + dateText).slice(-2);
+    }
     const date = new Date(dateText);
-    return `${date.getMonth() +
-      1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+    return `${addLeadingZero(date.getMonth() + 1)}/${addLeadingZero(
+      date.getDate()
+    )} ${addLeadingZero(date.getHours())}:${addLeadingZero(date.getMinutes())}`;
   }
 
   function toggleChat() {

@@ -28,44 +28,49 @@
   let votes = [];
 
   let updateVoteSub;
-  let createVoteSub;
-
   let openWarningModal;
+
+  let isLocalVoteUpdated = false;
 
   $: votedUsers = votes.map(vote => vote.user.username);
 
   onMount(async () => {
-    getUserData();
+    await getUserData();
     Hub.listen("auth", handleAuth);
-
+    await getVotes();
     try {
-      const { data } = await API.graphql(
-        graphqlOperation(listVotes, { limit: 100 })
-      );
-
-      console.log("listVotes data", data);
-      votes = data.listVotes.items;
+      if (user) {
+        const hasUserVoted = votes.some(
+          vote => vote.user.username === user.username
+        );
+        if (!hasUserVoted) {
+          const createVoteInput = {
+            voteUserId: user.attributes.sub
+          };
+          try {
+            await API.graphql(
+              graphqlOperation(createVote, { input: createVoteInput })
+            );
+            getVotes();
+          } catch (err) {
+            console.log("createVote err:", err);
+          }
+        }
+      }
       updateVoteSub = API.graphql(graphqlOperation(onUpdateVote)).subscribe({
         next: ({ value }) => {
-          const updatedVote = value.data.onUpdateVote;
-          const index = votes.findIndex(vote => vote.id === updatedVote.id);
+          if (!isLocalVoteUpdated) {
+            const updatedVote = value.data.onUpdateVote;
+            const index = votes.findIndex(vote => vote.id === updatedVote.id);
 
-          const updatedVotes = [
-            ...votes.slice(0, index),
-            updatedVote,
-            ...votes.slice(index + 1)
-          ];
+            const updatedVotes = [
+              ...votes.slice(0, index),
+              updatedVote,
+              ...votes.slice(index + 1)
+            ];
 
-          votes = updatedVotes;
-        }
-      });
-
-      createVoteSub = API.graphql(graphqlOperation(onCreateVote)).subscribe({
-        next: ({ value }) => {
-          const newVote = value.data.onCreateVote;
-          const prevVotes = votes.filter(vote => vote.id !== newVote.id);
-          const updatedVotes = [...prevVotes, newVote];
-          votes = updatedVotes;
+            votes = updatedVotes;
+          }
         }
       });
     } catch (err) {
@@ -75,7 +80,6 @@
 
   onDestroy(() => {
     updateVoteSub.unsubscribe();
-    createVoteSub.unsubscribe();
   });
 
   function handleAuth(authData) {
@@ -96,6 +100,16 @@
       default:
         return;
     }
+  }
+
+  async function getVotes() {
+    const { data } = await API.graphql(
+      graphqlOperation(listVotes, { limit: 100 })
+    );
+
+    votes = data.listVotes.items.sort(
+      (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+    );
   }
 
   async function getUserData() {
@@ -180,33 +194,29 @@
   async function handleVoteUpdate(vote, { detail }) {
     if (!user) return;
     if (user.attributes.sub !== vote.user.id) return;
-
+    const backupVotes = [...votes];
     const updateVoteInput = {
       id: vote.id,
       isComing: detail
     };
     try {
+      const updatedVote = updateVoteInput;
+      const index = votes.findIndex(vote => vote.id === updatedVote.id);
+
+      const updatedVotes = [
+        ...votes.slice(0, index),
+        { ...updateVoteInput, user: vote.user },
+        ...votes.slice(index + 1)
+      ];
+      votes = updatedVotes;
+      isLocalVoteUpdated = true;
+
       await API.graphql(
         graphqlOperation(updateVote, { input: updateVoteInput })
       );
     } catch (err) {
       console.log("updateVote err:", err);
-    }
-  }
-
-  async function handleVoteCreate({ detail }) {
-    if (!user) return;
-
-    const createVoteInput = {
-      isComing: detail,
-      voteUserId: user.attributes.sub
-    };
-    try {
-      await API.graphql(
-        graphqlOperation(createVote, { input: createVoteInput })
-      );
-    } catch (err) {
-      console.log("createVote err:", err);
+      votes = backupVotes;
     }
   }
 
@@ -272,30 +282,21 @@
       </li>
     {/if}
     {#each votes as vote}
-      <li
-        class={`flex w-full h-12 cursor-pointer ${user && isActive(vote) ? 'border-b-2 border-gray-600' : 'border-b border-gray-300'}`}>
-        <span
-          class={`w-2/5 flex items-center ${user && isActive(vote) ? 'font-bold' : 'font-normal'}`}>
-          {vote.user.username}
-        </span>
-        <span class="w-3/5">
-          <PlayerVote
-            on:vote={details => handleVoteUpdate(vote, details)}
-            vote={vote.isComing} />
-        </span>
-      </li>
+      {#if vote.isComing || (user && vote.user.username === user.username)}
+        <li
+          class={`flex w-full h-12 cursor-pointer ${user && isActive(vote) ? 'border-b-2 border-gray-600' : 'border-b border-gray-300'}`}>
+          <span
+            class={`w-2/5 flex items-center ${user && isActive(vote) ? 'font-bold' : 'font-normal'}`}>
+            {vote.user.username}
+          </span>
+          <span class="w-3/5">
+            <PlayerVote
+              on:vote={details => handleVoteUpdate(vote, details)}
+              vote={vote.isComing} />
+          </span>
+        </li>
+      {/if}
     {/each}
-    <!-- <div>
-    <pre>{JSON.stringify(votedUsers, null, 2)}</pre>
-  </div> -->
-    {#if user && !votedUsers.includes(user.username)}
-      <li class="flex w-full h-12 cursor-pointer border-b border-grey-200">
-        <span class="w-2/5 flex items-center">{user.username}</span>
-        <span class="w-3/5">
-          <PlayerVote on:vote={handleVoteCreate} />
-        </span>
-      </li>
-    {/if}
   </ul>
 </div>
 {#if user}

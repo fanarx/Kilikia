@@ -40,13 +40,14 @@
 </style>
 
 <div class="flex w-full items-center h-12">
-  <span class="w-8 h-8 mr-6 text-center text-lg font-bold text-green-600">
+  <span
+    class="w-8 h-8 mr-4 sm:mr-6 text-center text-lg font-bold text-green-600">
     {yesNumber}
   </span>
-  <span class="w-8 h-8 mr-6 text-center text-lg font-bold text-red-600">
+  <span class="w-8 h-8 mr-4 sm:mr-6 text-center text-lg font-bold text-red-600">
     {noNumber}
   </span>
-  <span class="w-8 h-8 mr-6 text-center text-lg font-bold text-blue-600">
+  <span class="w-8 h-8 text-center text-lg font-bold text-blue-600">
     {maybeNumber}
   </span>
 </div>

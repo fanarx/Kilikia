@@ -31,6 +31,7 @@
   let openWarningModal;
 
   let isLocalVoteUpdated = false;
+  let isLoading = false;
 
   $: votedUsers = votes.map(vote => vote.user.username);
 
@@ -126,6 +127,7 @@
 
   async function handleLogin({ detail: { username, password, isConfirmed } }) {
     try {
+      isLoading = true;
       const loginPassword = isConfirmed ? password.concat("808990") : "kilikia";
       const signedUser = await Auth.signIn({
         username,
@@ -141,9 +143,11 @@
         console.log("handleLogin: loggedUser", loggedUser);
       }
       openWarningModal = false;
+      isLoading = false;
     } catch (err) {
       console.log("auth err: ", err);
       errorMessage = err.message;
+      isLoading = false;
     }
   }
 
@@ -254,7 +258,11 @@
     </span>
   {:else if !openWarningModal}
     <div class="flex items-start">
-      <PlayerLogin on:login={handleLogin} {errorMessage} navbarMode />
+      <PlayerLogin
+        on:login={handleLogin}
+        {errorMessage}
+        {isLoading}
+        navbarMode />
     </div>
   {/if}
 </div>
@@ -270,7 +278,7 @@
           class="w-8 h-8 absolute top-0 right-0 m-2 cursor-pointer"
           src={sign_close}
           alt="Close" />
-        <PlayerLogin on:login={handleLogin} {errorMessage} />
+        <PlayerLogin on:login={handleLogin} {errorMessage} {isLoading} />
       </div>
     {/if}
     {#if votes.length > 0}

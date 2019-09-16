@@ -4,11 +4,13 @@
   import { fly } from "svelte/transition";
   import { listUsers } from "../graphql/queries";
   import sign_confirmed from "../images/sign_confirmed.svg";
+  import spinner from "../images/spinner.svg";
 
   const dispatch = createEventDispatcher();
 
   export let errorMessage;
   export let navbarMode;
+  export let isLoading;
 
   let players = [];
   let confirmPassword = null;
@@ -25,7 +27,9 @@
 
   onMount(async () => {
     try {
-      const { data } = await API.graphql(graphqlOperation(listUsers, {limit: 100}));
+      const { data } = await API.graphql(
+        graphqlOperation(listUsers, { limit: 100 })
+      );
 
       console.log("data", data);
       players = data.listUsers.items;
@@ -44,8 +48,7 @@
   }
 
   function isFormValid() {
-    console.log("passwordLengthError", passwordLengthError);
-    console.log("passwordMatchError", passwordMatchError);
+    if (password.trim().length === 0) return false;
     return !passwordLengthError && !passwordMatchError;
   }
 
@@ -54,6 +57,7 @@
     if (!isFormValid()) {
       return;
     }
+    if (isLoading) return false;
     dispatch("login", {
       username: selectedPlayer.username,
       password,
@@ -156,7 +160,9 @@
         px-8 m-3 mx-auto rounded"
         type="submit"
         on:click={loginPlayer}>
-        {selectedPlayer.confirmed ? 'Login' : 'Sign up'}
+        {#if isLoading}
+          <img class="w-6 h-6" src={spinner} alt="loading" />
+        {:else}{selectedPlayer.confirmed ? 'Login' : 'Sign up'}{/if}
       </button>
     </div>
   {/if}

@@ -21,7 +21,9 @@
         graphqlOperation(listMessages, { limit: 500 })
       );
 
-      messages = data.listMessages.items;
+      messages = data.listMessages.items.sort(
+        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+      );
 
       createMessageSub = API.graphql(
         graphqlOperation(onCreateMessage)
@@ -32,7 +34,6 @@
           messages = updatedMessages.sort(
             (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
           );
-          messageText = "";
         }
       });
     } catch (err) {
@@ -61,6 +62,7 @@
       await API.graphql(
         graphqlOperation(createMessage, { input: createMessageInput })
       );
+      messageText = "";
     } catch (err) {
       console.log("createMessage err:", err);
     }

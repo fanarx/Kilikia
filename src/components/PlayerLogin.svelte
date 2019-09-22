@@ -32,7 +32,13 @@
       );
 
       console.log("data", data);
-      players = data.listUsers.items;
+      players = data.listUsers.items.sort((a, b) => {
+        const nameA = a.username.toLowerCase();
+        const nameB = b.username.toLowerCase();
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      });
     } catch (err) {
       console.error("Error SELECT new user", err);
     }

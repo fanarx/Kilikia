@@ -15,15 +15,18 @@
   let players = [];
   let confirmPassword = null;
   let password = "";
-  let isLogging = false;
+  let isConfirmPasswordTouched = false;
+  let isPasswordTouched = false;
 
   let selectedPlayer = null;
   let isDropdownOpen = false;
 
-  $: passwordLengthError = isLogging && password.trim().length === 0;
+  $: passwordLengthError = isPasswordTouched && password.trim().length === 0;
 
   $: passwordMatchError =
-    isLogging && confirmPassword !== null && password !== confirmPassword;
+    isConfirmPasswordTouched &&
+    confirmPassword !== null &&
+    password !== confirmPassword;
 
   onMount(async () => {
     try {
@@ -54,12 +57,19 @@
   }
 
   function isFormValid() {
-    if (password.trim().length === 0) return false;
+    if (password.trim().length === 0) {
+      passwordLengthError = true;
+      return false;
+    }
+    if (!selectedPlayer.confirmed && !confirmPassword) {
+      passwordMatchError = true;
+      return false;
+    }
+
     return !passwordLengthError && !passwordMatchError;
   }
 
   function loginPlayer() {
-    isLogging = true;
     if (!isFormValid()) {
       return;
     }
@@ -111,7 +121,8 @@
           on:click={e => {
             password = '';
             confirmPassword = null;
-            isLogging = false;
+            isPasswordTouched = false;
+            isConfirmPasswordTouched = false;
             errorMessage = '';
             selectedPlayer = player;
             toggleDropdown(e);
@@ -139,17 +150,20 @@
           class="border py-2 px-3 text-grey-darkest"
           type="password"
           bind:value={password}
+          on:blur={() => (isPasswordTouched = true)}
           placeholder="Password" />
       {:else}
         <input
           class="border py-2 px-3 text-grey-darkest mb-3"
           type="password"
           bind:value={password}
+          on:blur={() => (isPasswordTouched = true)}
           placeholder="New Password" />
         <input
           class="border py-2 px-3 text-grey-darkest"
           type="password"
           bind:value={confirmPassword}
+          on:blur={() => (isConfirmPasswordTouched = true)}
           placeholder="Confirm Password" />
       {/if}
       {#if passwordLengthError}

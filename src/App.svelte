@@ -40,24 +40,7 @@
     Hub.listen("auth", handleAuth);
     await getVotes();
     try {
-      if (user) {
-        const hasUserVoted = votes.some(
-          vote => vote.user.username === user.username
-        );
-        if (!hasUserVoted) {
-          const createVoteInput = {
-            voteUserId: user.attributes.sub
-          };
-          try {
-            await API.graphql(
-              graphqlOperation(createVote, { input: createVoteInput })
-            );
-            getVotes();
-          } catch (err) {
-            console.log("createVote err:", err);
-          }
-        }
-      }
+      await getUserVotes();
       updateVoteSub = API.graphql(graphqlOperation(onUpdateVote)).subscribe({
         next: ({ value }) => {
           if (!isLocalVoteUpdated) {
@@ -83,12 +66,34 @@
     updateVoteSub.unsubscribe();
   });
 
-  function handleAuth(authData) {
+  async function getUserVotes() {
+    if (user) {
+      const hasUserVoted = votes.some(
+        vote => vote.user.username === user.username
+      );
+      if (!hasUserVoted) {
+        const createVoteInput = {
+          voteUserId: user.attributes.sub
+        };
+        try {
+          await API.graphql(
+            graphqlOperation(createVote, { input: createVoteInput })
+          );
+          getVotes();
+        } catch (err) {
+          console.log("createVote err:", err);
+        }
+      }
+    }
+  }
+
+  async function handleAuth(authData) {
     console.log("handleAuth: authData: ", authData);
     switch (authData.payload.event) {
       case "signIn":
         console.log("signed in CASE");
-        getUserData();
+        await getUserData();
+        getUserVotes();
         registerNewUser(authData.payload.data);
         break;
       case "signUp":
@@ -244,14 +249,15 @@
   .with-opacity {
     background: rgba(113, 128, 150, 0.5);
   }
-  
+
   .min250 {
     min-width: 250px;
   }
 </style>
 
 <div class="flex justify-between bg-indigo-900 h-10 px-8">
-  <span class="flex items-center text-white h-10 font-semibold whitespace-no-wrap">
+  <span
+    class="flex items-center text-white h-10 font-semibold whitespace-no-wrap">
     Kilikia Football
   </span>
   {#if user}

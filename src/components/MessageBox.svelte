@@ -83,20 +83,6 @@
   }
 </script>
 
-<style>
-  ::-webkit-scrollbar {
-    width: 4px;
-    cursor: pointer;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: #cbd5e0;
-    border-radius: 4px;
-  }
-  .vh65 {
-    height: 65vh;
-  }
-</style>
-
 {#if isChatOpen}
   <div class="flex justify-center">
     <div

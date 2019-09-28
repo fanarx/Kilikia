@@ -16,10 +16,6 @@
   }
 </script>
 
-<style>
-
-</style>
-
 <div class="flex w-full items-center h-12">
   <img
     on:click={() => dispatch('vote', 'YES')}

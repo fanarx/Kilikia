@@ -87,17 +87,6 @@
   }
 </script>
 
-<style>
-  ::-webkit-scrollbar {
-    width: 4px;
-    cursor: pointer;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: #cbd5e0;
-    border-radius: 4px;
-  }
-</style>
-
 <svelte:window on:click={closeDropdown} />
 
 <div class={`flex flex-col bg-white overflow-hidden w-48 z-10 `}>

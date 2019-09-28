@@ -245,16 +245,6 @@
   }
 </script>
 
-<style>
-  .with-opacity {
-    background: rgba(113, 128, 150, 0.5);
-  }
-
-  .min250 {
-    min-width: 250px;
-  }
-</style>
-
 <div class="flex justify-between bg-indigo-900 h-10 px-8">
   <span
     class="flex items-center text-white h-10 font-semibold whitespace-no-wrap">

@@ -6,6 +6,11 @@ import './main.css';
 //import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 
+if ('serviceWorker' in navigator) {
+  // sw.js can literally be empty, but must exist
+  navigator.serviceWorker.register('/sw.js');
+}
+
 Amplify.configure(aws_exports);
 PubSub.configure(aws_exports);
 

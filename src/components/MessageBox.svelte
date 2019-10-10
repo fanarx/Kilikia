@@ -86,7 +86,7 @@
 {#if isChatOpen}
   <div class="flex justify-center">
     <div
-      transition:slide={{ y: 1200, duration: 1500 }}
+      transition:slide|local={{ y: 1200, duration: 1500 }}
       class="vh65 flex flex-col sm:w-2/3 mt-8 w-full bottom-0 fixed">
       <div
         class="flex items-center space-between rounded-t-lg bg-green-600

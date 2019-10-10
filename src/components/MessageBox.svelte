@@ -104,18 +104,15 @@
         border-gray-400 border-b-0 bg-gray-100 pt-4 pr-4 pl-1 flex-1">
         {#each messages as message}
           <div
-            class="flex items-start mb-2 pl-2 pb-2 text-sm bg-green-200 rounded">
-            <div class="flex-1 overflow-hidden">
-              <div>
-                <span class="font-bold">{message.author.username}</span>
-                <span class="text-grey text-xs">
-                  {formatDate(message.createdAt)}
-                </span>
-              </div>
-              <p class="text-black leading-normal">
-                {@html message.content}
-              </p>
-            </div>
+            class="flex-1 flex-col items-start mb-2 pl-2 pb-2 text-sm
+            bg-green-200 rounded h-auto">
+            <span class="font-bold">{message.author.username}</span>
+            <span class="text-grey text-xs">
+              {formatDate(message.createdAt)}
+            </span>
+            <p class="text-black leading-normal">
+              {@html message.content}
+            </p>
           </div>
         {/each}
       </div>

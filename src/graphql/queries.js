@@ -132,3 +132,30 @@ export const listMessages = `query ListMessages(
   }
 }
 `;
+export const getOtherPlayer = `query GetOtherPlayer($id: ID!) {
+  getOtherPlayer(id: $id) {
+    id
+    name
+    isComing
+    adderName
+    createdAt
+  }
+}
+`;
+export const listOtherPlayers = `query ListOtherPlayers(
+  $filter: ModelOtherPlayerFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listOtherPlayers(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      name
+      isComing
+      adderName
+      createdAt
+    }
+    nextToken
+  }
+}
+`;

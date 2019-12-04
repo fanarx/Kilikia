@@ -18,6 +18,7 @@
   import PlayerVote from "./components/PlayerVote";
   import VoteCounter from "./components/VoteCounter";
   import MessageBox from "./components/MessageBox";
+  import OtherPlayerBox from "./components/OtherPlayerBox";
   import sign_close from "./images/sign_close.svg";
 
   let user = null;
@@ -26,11 +27,12 @@
   const password = "kilikia";
   let errorMessage;
   let votes = [];
+  let otherVotes = [];
 
   let updateVoteSub;
   let openWarningModal;
 
-  let isLocalVoteUpdated = false;
+  //let isLocalVoteUpdated = false;
   let isLoading = false;
 
   $: votedUsers = votes.map(vote => vote.user.username);
@@ -43,18 +45,20 @@
       await getUserVotes();
       updateVoteSub = API.graphql(graphqlOperation(onUpdateVote)).subscribe({
         next: ({ value }) => {
-          if (!isLocalVoteUpdated) {
-            const updatedVote = value.data.onUpdateVote;
-            const index = votes.findIndex(vote => vote.id === updatedVote.id);
-
-            const updatedVotes = [
+          const updatedVote = value.data.onUpdateVote;
+          const index = votes.findIndex(vote => vote.id === updatedVote.id);
+          let updatedVotes;
+          if (index >= 0) {
+            updatedVotes = [
               ...votes.slice(0, index),
               updatedVote,
               ...votes.slice(index + 1)
             ];
-
-            votes = updatedVotes;
+          } else {
+            updatedVotes = [...votes, updatedVote];
           }
+
+          votes = updatedVotes;
         }
       });
     } catch (err) {
@@ -138,7 +142,6 @@
         username,
         password: loginPassword
       });
-      console.log("handleLogin: signedUser", signedUser);
       if (signedUser.challengeName === "NEW_PASSWORD_REQUIRED") {
         const loggedUser = await Auth.completeNewPassword(
           signedUser,
@@ -184,7 +187,6 @@
         const newUser = await API.graphql(
           graphqlOperation(createUser, { input: registerUserInput })
         );
-        console.log({ newUser });
       } catch (err) {
         console.error("Error registering new user", err);
       }
@@ -196,7 +198,6 @@
       const updatedUser = await API.graphql(
         graphqlOperation(updateUser, { input: updateUserInput })
       );
-      console.log({ updatedUser });
     }
   }
 
@@ -218,7 +219,6 @@
         ...votes.slice(index + 1)
       ];
       votes = updatedVotes;
-      isLocalVoteUpdated = true;
 
       await API.graphql(
         graphqlOperation(updateVote, { input: updateVoteInput })
@@ -285,7 +285,7 @@
       <li class={`flex w-full h-12 cursor-pointer`}>
         <span class={`w-2/5 flex items-center`}>&nbsp;</span>
         <span class="w-3/5">
-          <VoteCounter {votes} />
+          <VoteCounter votes={[...votes, ...otherVotes]} />
         </span>
       </li>
     {/if}
@@ -294,7 +294,7 @@
         <li
           class={`flex w-full h-12 cursor-pointer ${user && isActive(vote) ? 'border-b-2 border-gray-600' : 'border-b border-gray-300'}`}>
           <span
-            class={`w-2/5 flex items-center ${user && isActive(vote) ? 'font-bold' : 'font-normal'}`}>
+            class={`w-2/5 flex items-center capitalize ${user && isActive(vote) ? 'font-bold' : 'font-normal'}`}>
             {vote.user.username}
           </span>
           <span class="w-3/5">
@@ -305,6 +305,7 @@
         </li>
       {/if}
     {/each}
+    <OtherPlayerBox bind:value={otherVotes} user={user && user} />
   </ul>
 </div>
 {#if user}

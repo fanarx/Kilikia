@@ -106,7 +106,7 @@
           <div
             class="flex-1 flex-col items-start mb-2 pl-2 pb-2 text-sm
             bg-green-200 rounded h-auto">
-            <span class="font-bold">{message.author.username}</span>
+            <span class="font-bold capitalize">{message.author.username}</span>
             <span class="text-grey text-xs">
               {formatDate(message.createdAt)}
             </span>
@@ -116,7 +116,7 @@
           </div>
         {/each}
       </div>
-      <div class="flex h-1/3">
+      <div class="flex h-1/3 z-50">
         <textarea
           placeholder="message..."
           bind:value={messageText}
@@ -125,7 +125,7 @@
           rows="4" />
         <div
           on:click={handleMessageSend}
-          class={`flex items-center border-2 border-grey rounded-br-lg
+          class={`flex bg-white items-center border-2 border-grey rounded-br-lg
           outline-none ${messageText.trim() === '' ? '' : 'cursor-pointer'}`}>
           {#if isMessageEmpty()}
             <img class="w-10 h-10" src={sign_send_passive} alt="send" />

@@ -19,17 +19,17 @@
 <div class="flex w-full items-center h-12">
   <img
     on:click={() => dispatch('vote', 'YES')}
-    class="w-8 h-8 mr-4 sm:mr-6"
+    class="w-8 h-8 mr-4 sm:mr-6 cursor-pointer"
     src={vote === 'YES' ? sign_yes_active : sign_yes_passive}
     alt={'YES'} />
   <img
     on:click={() => dispatch('vote', 'NO')}
-    class="w-8 h-8 mr-4 sm:mr-6"
+    class="w-8 h-8 mr-4 sm:mr-6 cursor-pointer"
     src={vote === 'NO' ? sign_no_active : sign_no_passive}
     alt={'NO'} />
   <img
     on:click={() => dispatch('vote', 'MAYBE')}
-    class="w-8 h-8"
+    class="w-8 h-8 cursor-pointer"
     src={vote === 'MAYBE' ? sign_maybe_active : sign_maybe_passive}
     alt={'MAYBE'} />
 </div>

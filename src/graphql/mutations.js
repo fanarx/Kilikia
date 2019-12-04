@@ -205,3 +205,33 @@ export const deleteMessage = `mutation DeleteMessage($input: DeleteMessageInput!
   }
 }
 `;
+export const createOtherPlayer = `mutation CreateOtherPlayer($input: CreateOtherPlayerInput!) {
+  createOtherPlayer(input: $input) {
+    id
+    name
+    isComing
+    adderName
+    createdAt
+  }
+}
+`;
+export const updateOtherPlayer = `mutation UpdateOtherPlayer($input: UpdateOtherPlayerInput!) {
+  updateOtherPlayer(input: $input) {
+    id
+    name
+    isComing
+    adderName
+    createdAt
+  }
+}
+`;
+export const deleteOtherPlayer = `mutation DeleteOtherPlayer($input: DeleteOtherPlayerInput!) {
+  deleteOtherPlayer(input: $input) {
+    id
+    name
+    isComing
+    adderName
+    createdAt
+  }
+}
+`;

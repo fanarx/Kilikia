@@ -25,3 +25,11 @@ type Message @model {
   author: User! @connection(name: "UserMessages")
   createdAt: String
 }
+
+type OtherPlayer @model {
+  id: ID!
+  name: String!
+  isComing: VoteEnum
+  adderName: String!
+  createdAt: String
+}

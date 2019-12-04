@@ -34,7 +34,6 @@
         graphqlOperation(listUsers, { limit: 100 })
       );
 
-      console.log("data", data);
       players = data.listUsers.items.sort((a, b) => {
         const nameA = a.username.toLowerCase();
         const nameB = b.username.toLowerCase();
@@ -94,7 +93,7 @@
     on:click={toggleDropdown}
     class={`flex h-10 items-center ${navbarMode ? 'bg-indigo-900' : 'bg-white'}`}>
     <span
-      class={`w-4/5  cursor-pointer pr-3 ${navbarMode ? 'text-white' : 'text-gray-700'} ${selectedPlayer ? 'text-center pl-4' : navbarMode ? 'text-right pl-2' : 'text-center'}`}>
+      class={`w-4/5  cursor-pointer pr-3 capitalize ${navbarMode ? 'text-white' : 'text-gray-700'} ${selectedPlayer ? 'text-center pl-4' : navbarMode ? 'text-right pl-2' : 'text-center'}`}>
       {selectedPlayer ? selectedPlayer.username : 'Log in'}
     </span>
     <span
@@ -124,7 +123,7 @@
             {:else}&nbsp;{/if}
           </span>
 
-          <span class="w-4/5">{player.username}</span>
+          <span class="w-4/5 capitalize">{player.username}</span>
         </li>
       {/each}
     </ul>

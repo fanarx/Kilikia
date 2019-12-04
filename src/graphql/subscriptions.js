@@ -205,3 +205,33 @@ export const onDeleteMessage = `subscription OnDeleteMessage {
   }
 }
 `;
+export const onCreateOtherPlayer = `subscription OnCreateOtherPlayer {
+  onCreateOtherPlayer {
+    id
+    name
+    isComing
+    adderName
+    createdAt
+  }
+}
+`;
+export const onUpdateOtherPlayer = `subscription OnUpdateOtherPlayer {
+  onUpdateOtherPlayer {
+    id
+    name
+    isComing
+    adderName
+    createdAt
+  }
+}
+`;
+export const onDeleteOtherPlayer = `subscription OnDeleteOtherPlayer {
+  onDeleteOtherPlayer {
+    id
+    name
+    isComing
+    adderName
+    createdAt
+  }
+}
+`;

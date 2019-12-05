@@ -79,7 +79,6 @@
         graphqlOperation(onUpdateOtherPlayer)
       ).subscribe({
         next: ({ value }) => {
-          //if (!isLocalVoteUpdated) {
           const updatedOtherPlayer = value.data.onUpdateOtherPlayer;
           const index = otherPlayers.findIndex(
             player => player.id === updatedOtherPlayer.id
@@ -92,7 +91,6 @@
           ];
 
           otherPlayers = updatedOtherPlayers;
-          // }
         }
       });
     } catch (err) {
@@ -104,12 +102,19 @@
     createOtherPlayerSub.unsubscribe();
   });
 
-  function toggleAddPlayerBox() {
+  function toggleAddPlayerBox(e) {
+    e.stopPropagation();
     showAddPlayerBox = !showAddPlayerBox;
     if (!showAddPlayerBox) {
       addPlayer.name = null;
       addPlayer.isComing = null;
     }
+  }
+
+  function closeAddPlayerBox() {
+    showAddPlayerBox = false;
+    addPlayer.name = null;
+    addPlayer.isComing = null;
   }
 
   async function handleVoteUpdate(otherPlayer, { detail }) {
@@ -204,10 +209,12 @@
   }
 </script>
 
+<svelte:window on:click={closeAddPlayerBox} />
+
 <div class="flex flex-col mt-10">
   <div class="flex mb-2">
-    <div class="flex cursor-pointer" on:click={toggleAddPlayerBox}>
-      <div class="text-orange-700 text-lg font-semibold">Այլ խաղացողներ</div>
+    <div class="flex cursor-pointer items-center" on:click={toggleAddPlayerBox}>
+      <div class="text-orange-600 text-lg font-semibold">Այլ խաղացողներ</div>
       {#if user}
         <img
           class="w-6 h-6 ml-2"
@@ -220,9 +227,11 @@
   {#if showAddPlayerBox}
     <div
       transition:fly
+      on:click={e => e.stopPropagation()}
       class="flex w-full absolute mt-8 p-2 bg-white border border-gray-400 z-40">
       <span class="w-2/5">
         <input
+          on:click={() => (addPlayer.isComing = null)}
           class="w-4/5 border py-2 px-3 text-grey-darkest w-32"
           type="text"
           bind:value={addPlayer.name}
@@ -252,7 +261,7 @@
           <PlayerVote
             vote={otherPlayer.isComing}
             on:vote={details => user && otherPlayer.adderName === user.username && handleVoteUpdate(otherPlayer, details)} />
-          <span class="ml-auto font-thin text-gray-600 text-sm self-end">
+          <span class="ml-auto font-thin text-gray-600 text-sm self-end capitalize">
             {otherPlayer.adderName}
           </span>
           <span class="absolute top-0 right-0 mt-1">

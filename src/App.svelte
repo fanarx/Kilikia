@@ -289,6 +289,7 @@
         </span>
       </li>
     {/if}
+    <div class="text-orange-600 text-lg font-semibold">Հիմնական</div>
     {#each votes as vote}
       {#if vote.isComing || (user && vote.user.username === user.username)}
         <li

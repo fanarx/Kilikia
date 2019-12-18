@@ -115,7 +115,8 @@
             selectedPlayer = player;
             toggleDropdown(e);
           }}
-          class="flex w-full pl-2 py-4 h-12 cursor-pointer hover:bg-teal-600">
+          class="flex items-center w-full pl-2 py-4 h-12 cursor-pointer
+          hover:bg-teal-600">
 
           <span class="w-1/5 inline-block">
             {#if player.confirmed}

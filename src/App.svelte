@@ -245,7 +245,7 @@
   }
 </script>
 
-<div class="flex justify-between bg-indigo-900 h-10 px-8">
+<div class="flex justify-between bg-indigo-900 h-10 px-8 fixed w-full top-0 z-50">
   <span
     class="flex items-center text-white h-10 font-semibold whitespace-no-wrap">
     Kilikia Football
@@ -289,7 +289,7 @@
         </span>
       </li>
     {/if}
-    <div class="text-orange-600 text-lg font-semibold">Հիմնական</div>
+    <div class="text-orange-600 text-lg font-semibold mb-2">Հիմնական</div>
     {#each votes as vote}
       {#if vote.isComing || (user && vote.user.username === user.username)}
         <li
